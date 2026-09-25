@@ -1,0 +1,37 @@
+# Ambientes Virtuais (Essencial ignorar para não travar entre PCs)
+venv/
+.venv/
+env/
+ENV/
+*.cache
+
+# Arquivos do Django e Python
+*.pyc
+*.pyo
+*$py.class
+__pycache__/
+db.sqlite3
+/media/
+/static/
+.db
+
+# Configurações e Senhas (Segurança)
+.env
+.secrets
+.local
+
+# Pastas de Editores/IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.docs/
+.novo_app/
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+
