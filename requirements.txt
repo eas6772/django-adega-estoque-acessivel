@@ -1,3 +1,13 @@
-asgiref==3.12.1
+# Framework
 Django==6.1.1
+asgiref==3.12.1
 sqlparse==0.6.0
+
+# Banco de dados (PostgreSQL)
+psycopg[binary]==3.3.6
+
+# Configuração via variáveis de ambiente (.env)
+django-environ==0.14.0
+
+# Geração de PDF (relatório de reposição de estoque)
+reportlab==5.0.1
