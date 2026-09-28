@@ -28,8 +28,8 @@ db.sqlite3
 *.njsproj
 *.sln
 *.swp
-.docs/
-.novo_app/
+docs/
+novo_app/
 
 # Arquivos do Sistema Operacional
 .DS_Store
