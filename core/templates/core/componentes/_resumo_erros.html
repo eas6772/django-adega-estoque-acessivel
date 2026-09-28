@@ -1,0 +1,24 @@
+{% comment %}
+Uso: {% include 'core/componentes/_resumo_erros.html' with form=form %}
+Só aparece quando o form voltou inválido. base.js move o foco para aqui
+quando o elemento existir na página (id="resumo-erros").
+{% endcomment %}
+{% load ui %}
+{% if form.errors %}
+<div id="resumo-erros" class="resumo-erros" role="alert" tabindex="-1">
+  <p class="resumo-erros-titulo">
+    {% icone "exclamation-triangle-fill" %}
+    Corrija os campos abaixo antes de continuar:
+  </p>
+  <ul>
+    {% for campo in form %}
+      {% for erro in campo.errors %}
+        <li><a href="#{{ campo.id_for_label }}">{{ campo.label }}: {{ erro }}</a></li>
+      {% endfor %}
+    {% endfor %}
+    {% for erro in form.non_field_errors %}
+      <li>{{ erro }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

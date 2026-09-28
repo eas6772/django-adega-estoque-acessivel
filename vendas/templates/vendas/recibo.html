@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Recibo da venda #{{ venda.pk }} — Empório BR{% endblock %}
+
+{% block content %}
+{% include 'vendas/_recibo.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+  document.getElementById('botao-imprimir-recibo').addEventListener('click', () => window.print());
+  document.getElementById('botao-nova-venda').addEventListener('click', () => {
+    window.location.href = "{% url 'vendas:pdv' %}";
+  });
+</script>
+{% endblock %}

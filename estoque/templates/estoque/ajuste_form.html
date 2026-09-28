@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Ajustar estoque — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Ajustar estoque</h1>
+
+{% include 'core/componentes/_resumo_erros.html' with form=form %}
+
+<form method="post" novalidate id="form-ajuste" data-url-lotes="{% url 'estoque:api_lotes_produto' 0 %}">
+  {% csrf_token %}
+  <p class="legenda-obrigatorios">Campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+
+  {% include 'core/componentes/_campo.html' with campo=form.produto %}
+
+  <div class="campo">
+    <label for="id_lote">Lote <span class="obrigatorio" aria-hidden="true">*</span></label>
+    <select id="id_lote" name="lote" required aria-describedby="lote-info" aria-busy="true">
+      <option value="">Selecione um produto primeiro</option>
+    </select>
+    <p class="campo-dica" id="lote-info" aria-live="polite"></p>
+    {% if form.lote.errors %}
+      <p class="campo-erro" id="id_lote-erro">{{ form.lote.errors|join:" " }}</p>
+    {% endif %}
+  </div>
+
+  {% include 'core/componentes/_campo.html' with campo=form.nova_quantidade %}
+  {% include 'core/componentes/_campo.html' with campo=form.motivo %}
+
+  <div class="acoes-form">
+    <a href="{% url 'estoque:visao_geral' %}" class="botao-secundario">Cancelar</a>
+    <button type="submit" class="botao-primario">Confirmar ajuste</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{% static 'estoque/js/ajuste.js' %}"></script>
+{% endblock %}

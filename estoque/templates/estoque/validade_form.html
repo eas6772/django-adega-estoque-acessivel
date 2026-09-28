@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Alterar validade — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Alterar validade do lote #{{ object.pk }}</h1>
+<p>{{ object.produto.nome }} — quantidade atual: {{ object.quantidade }}</p>
+
+{% include 'core/componentes/_resumo_erros.html' with form=form %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  <p class="legenda-obrigatorios">Campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+
+  {% include 'core/componentes/_campo.html' with campo=form.data_validade %}
+  {% include 'core/componentes/_campo.html' with campo=form.motivo %}
+
+  <div class="acoes-form">
+    <a href="{% url 'estoque:visao_geral' %}" class="botao-secundario">Cancelar</a>
+    <button type="submit" class="botao-primario">Salvar</button>
+  </div>
+</form>
+{% endblock %}

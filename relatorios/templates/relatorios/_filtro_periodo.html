@@ -1,0 +1,19 @@
+{% comment %}
+Uso: {% include 'relatorios/_filtro_periodo.html' %}
+Requer que a view use PeriodoMixin (data_inicio/data_fim no contexto).
+{% endcomment %}
+<form method="get" role="search" aria-label="Filtrar por período">
+  <fieldset>
+    <legend>Período</legend>
+    <div class="campo">
+      <label for="id_data_inicio">De</label>
+      <input type="date" id="id_data_inicio" name="data_inicio" value="{{ data_inicio|date:'Y-m-d'|default:'' }}">
+    </div>
+    <div class="campo">
+      <label for="id_data_fim">Até</label>
+      <input type="date" id="id_data_fim" name="data_fim" value="{{ data_fim|date:'Y-m-d'|default:'' }}">
+    </div>
+  </fieldset>
+  <button type="submit" class="botao-secundario">Filtrar</button>
+  <a href="{{ request.path }}" class="botao-secundario">Limpar</a>
+</form>

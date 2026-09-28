@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Relatório de reposição — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Relatórios</h1>
+{% include 'relatorios/_abas.html' %}
+
+<div class="cabecalho-pagina">
+  <h2>Reposição sugerida</h2>
+  <a href="{% url 'relatorios:reposicao_pdf' %}" class="botao-secundario">{% icone "file-earmark-pdf-fill" %} Exportar PDF</a>
+</div>
+
+{% if produtos %}
+<div class="tabela-scroll" role="region" aria-label="Produtos para reposição" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Produtos abaixo do mínimo com quantidade sugerida de compra</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Estoque</th>
+        <th scope="col">Mínimo</th>
+        <th scope="col">Máximo</th>
+        <th scope="col">Comprar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for produto in produtos %}
+      <tr>
+        <th scope="row">{{ produto.nome }}</th>
+        <td>{{ produto.categoria.nome }}</td>
+        <td>{{ produto.estoque_total }}</td>
+        <td>{{ produto.estoque_minimo }}</td>
+        <td>{{ produto.estoque_maximo }}</td>
+        <td><strong>{{ produto.qtd_compra }}</strong></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto precisa de reposição." %}
+{% endif %}
+{% endblock %}

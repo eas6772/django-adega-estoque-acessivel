@@ -1,0 +1,16 @@
+{% comment %}
+Uso: {% include 'relatorios/_abas.html' %}
+São links para páginas diferentes, não abas ARIA (não usar role="tablist" —
+isso exigiria navegação por setas e painéis na mesma página). A11 do plano.
+{% endcomment %}
+<nav class="abas-relatorio" aria-label="Relatórios">
+  <ul>
+    <li><a href="{% url 'relatorios:estoque' %}" {% if request.resolver_match.view_name == 'relatorios:estoque' %}aria-current="page"{% endif %}>Estoque</a></li>
+    <li><a href="{% url 'relatorios:reposicao' %}" {% if request.resolver_match.view_name == 'relatorios:reposicao' %}aria-current="page"{% endif %}>Reposição</a></li>
+    {% if user.is_admin %}
+    <li><a href="{% url 'relatorios:mais_vendidos' %}" {% if request.resolver_match.view_name == 'relatorios:mais_vendidos' %}aria-current="page"{% endif %}>Mais vendidos</a></li>
+    <li><a href="{% url 'relatorios:lucro' %}" {% if request.resolver_match.view_name == 'relatorios:lucro' %}aria-current="page"{% endif %}>Lucro</a></li>
+    <li><a href="{% url 'relatorios:movimentacoes' %}" {% if request.resolver_match.view_name == 'relatorios:movimentacoes' %}aria-current="page"{% endif %}>Movimentações</a></li>
+    {% endif %}
+  </ul>
+</nav>

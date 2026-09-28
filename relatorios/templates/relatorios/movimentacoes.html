@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Movimentações — Relatórios — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Relatórios</h1>
+{% include 'relatorios/_abas.html' %}
+<h2>Histórico de movimentações</h2>
+
+<form method="get" role="search" aria-label="Filtrar movimentações">
+  <fieldset>
+    <legend>Período</legend>
+    {% include 'core/componentes/_campo.html' with campo=filtro.data_inicio %}
+    {% include 'core/componentes/_campo.html' with campo=filtro.data_fim %}
+  </fieldset>
+  <div class="campo">
+    <label for="{{ filtro.tipo.id_for_label }}">Tipo</label>
+    {{ filtro.tipo }}
+  </div>
+  <button type="submit" class="botao-secundario">Filtrar</button>
+  <a href="{% url 'relatorios:movimentacoes' %}" class="botao-secundario">Limpar</a>
+</form>
+
+{% if movimentacoes %}
+<div class="tabela-scroll" role="region" aria-label="Histórico de movimentações" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Histórico de movimentações de estoque</caption>
+    <thead>
+      <tr>
+        <th scope="col">Data</th>
+        <th scope="col">Produto</th>
+        <th scope="col">Lote</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Quantidade</th>
+        <th scope="col">Usuário</th>
+        <th scope="col">Motivo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mov in movimentacoes %}
+      <tr>
+        <td><time datetime="{{ mov.data|date:'c' }}">{{ mov.data|date:'d/m/Y H:i' }}</time></td>
+        <th scope="row">{{ mov.produto.nome }}</th>
+        <td>{{ mov.lote.numero_lote|default:"—" }}</td>
+        <td>{{ mov.get_tipo_display }}</td>
+        <td>{{ mov.quantidade }}</td>
+        <td>{{ mov.usuario.nome }}</td>
+        <td>{{ mov.motivo|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma movimentação encontrada para este filtro." %}
+{% endif %}
+{% endblock %}

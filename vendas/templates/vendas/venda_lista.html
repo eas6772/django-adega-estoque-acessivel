@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Vendas — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cabecalho-pagina">
+  <h1>Vendas</h1>
+  <a href="{% url 'vendas:pdv' %}" class="botao-primario">{% icone "cart-fill" %} Nova venda</a>
+</div>
+
+{% if vendas %}
+<div class="tabela-scroll" role="region" aria-label="Histórico de vendas" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Vendas registradas</caption>
+    <thead>
+      <tr>
+        <th scope="col">Venda</th>
+        <th scope="col">Data</th>
+        <th scope="col">Operador</th>
+        <th scope="col">Itens</th>
+        <th scope="col">Total</th>
+        <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for venda in vendas %}
+      <tr>
+        <th scope="row">#{{ venda.pk }}</th>
+        <td><time datetime="{{ venda.data|date:'c' }}">{{ venda.data|date:'d/m/Y H:i' }}</time></td>
+        <td>{{ venda.usuario.nome }}</td>
+        <td>{{ venda.num_itens }}</td>
+        <td>{{ venda.total|brl }}</td>
+        <td class="celula-acoes">
+          <a href="{% url 'vendas:recibo' venda.pk %}" aria-label="Ver recibo da venda {{ venda.pk }}">{% icone "receipt" %}</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma venda registrada." %}
+{% endif %}
+{% endblock %}

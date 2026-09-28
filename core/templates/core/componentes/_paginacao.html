@@ -1,0 +1,52 @@
+{% load ui %}
+{% comment %}
+Uso: {% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% querystring %} (Django 5.1+) preserva os filtros atuais da querystring.
+{% endcomment %}
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="paginacao" aria-label="Paginação">
+  <ul>
+    <li>
+      {% if page_obj.has_previous %}
+        <a href="?{% querystring page=page_obj.previous_page_number %}" aria-label="Página anterior">
+          {% icone "chevron-left" %}
+        </a>
+      {% else %}
+        <span aria-disabled="true">
+          {% icone "chevron-left" %}
+          <span class="visualmente-oculto">Página anterior</span>
+        </span>
+      {% endif %}
+    </li>
+    {% for n in page_obj.paginator.get_elided_page_range %}
+      <li>
+        {% if n == page_obj.paginator.ELLIPSIS %}
+          <span aria-hidden="true">…</span>
+        {% elif n == page_obj.number %}
+          <a href="?{% querystring page=n %}" aria-current="page" class="pagina-atual">
+            <span class="visualmente-oculto">Página </span>{{ n }}
+          </a>
+        {% else %}
+          <a href="?{% querystring page=n %}"><span class="visualmente-oculto">Página </span>{{ n }}</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+    <li>
+      {% if page_obj.has_next %}
+        <a href="?{% querystring page=page_obj.next_page_number %}" aria-label="Próxima página">
+          {% icone "chevron-right" %}
+        </a>
+      {% else %}
+        <span aria-disabled="true">
+          {% icone "chevron-right" %}
+          <span class="visualmente-oculto">Próxima página</span>
+        </span>
+      {% endif %}
+    </li>
+  </ul>
+  <p class="paginacao-info">
+    {{ page_obj.paginator.count }} resultado{{ page_obj.paginator.count|pluralize }} ·
+    página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+  </p>
+</nav>
+{% endif %}

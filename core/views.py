@@ -2,6 +2,8 @@
 Views de core: painel (dashboard) e gestão de usuários. Ver
 docs/projeto_django_spec.md §3.1.
 """
+from decimal import Decimal
+
 from django.contrib import messages
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
@@ -46,7 +48,7 @@ class PainelView(SecaoAtivaMixin, TemplateView):
         context['lotes_vencendo'] = Lote.objects.vencendo_em(30).select_related('produto')
         context['qtd_vendas_hoje'] = vendas_hoje.count()
         context['total_vendas_hoje'] = vendas_hoje.aggregate(
-            total=Coalesce(Sum('total'), 0)
+            total=Coalesce(Sum('total'), Decimal('0.00'))
         )['total']
         return context
 

@@ -28,6 +28,13 @@ class CategoriaListView(SecaoAtivaMixin, ListView):
             num_produtos=Count('produtos', filter=Q(produtos__ativo=True))
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Form vazio para o <dialog> de "nova categoria" (Etapa 3); em caso de
+        # erro, CategoriaFormMixin.form_invalid sobrescreve com o form inválido.
+        context.setdefault('form_categoria', CategoriaForm())
+        return context
+
 
 class CategoriaFormMixin(SecaoAtivaMixin):
     """

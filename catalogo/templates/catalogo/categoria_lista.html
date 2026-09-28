@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Categorias — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cabecalho-pagina">
+  <h1>Categorias</h1>
+  {% if user.is_admin %}
+  <button type="button" class="botao-primario" id="botao-nova-categoria">{% icone "folder-plus" %} Nova categoria</button>
+  {% endif %}
+</div>
+
+{% if categorias %}
+<div class="tabela-scroll" role="region" aria-label="Lista de categorias" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Categorias de produtos</caption>
+    <thead>
+      <tr>
+        <th scope="col">Nome</th>
+        <th scope="col">Produtos ativos</th>
+        <th scope="col">Situação</th>
+        <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for categoria in categorias %}
+      <tr>
+        <th scope="row">{{ categoria.nome }}</th>
+        <td>{{ categoria.num_produtos }}</td>
+        <td>
+          <span class="status {% if categoria.ativo %}status-ok{% else %}status-zerado{% endif %}">
+            {% icone "check-circle-fill" %}
+            {{ categoria.ativo|yesno:"Ativa,Inativa" }}
+          </span>
+        </td>
+        <td class="celula-acoes">
+          {% if user.is_admin %}
+          <button type="button" class="botao-icone botao-editar-categoria"
+                  data-id="{{ categoria.pk }}" data-nome="{{ categoria.nome }}"
+                  data-ativo="{{ categoria.ativo|yesno:'true,false' }}"
+                  data-url="{% url 'catalogo:categoria_editar' categoria.pk %}"
+                  aria-label="Editar {{ categoria.nome }}">{% icone "pencil-fill" %}</button>
+          <button type="button" class="botao-icone"
+                  data-confirmar-url="{% url 'catalogo:categoria_alternar' categoria.pk %}"
+                  data-confirmar-mensagem="{% if categoria.ativo %}Desativar{% else %}Ativar{% endif %} a categoria &quot;{{ categoria.nome }}&quot;?"
+                  data-confirmar-texto="{% if categoria.ativo %}Desativar{% else %}Ativar{% endif %}"
+                  aria-label="{% if categoria.ativo %}Desativar{% else %}Ativar{% endif %} {{ categoria.nome }}">
+            {% icone "power" %}
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma categoria cadastrada." %}
+{% endif %}
+
+{% if user.is_admin %}
+<dialog id="dialogo-categoria" class="dialogo" aria-labelledby="dialogo-categoria-titulo">
+  <form method="post" id="form-categoria" action="{% url 'catalogo:categoria_criar' %}">
+    {% csrf_token %}
+    <div class="dialogo-cabecalho">
+      <h2 id="dialogo-categoria-titulo">Nova categoria</h2>
+      <button type="button" class="botao-icone" id="botao-fechar-categoria" aria-label="Fechar">{% icone "x-lg" %}</button>
+    </div>
+    {% include 'core/componentes/_resumo_erros.html' with form=form_categoria %}
+    {% include 'core/componentes/_campo.html' with campo=form_categoria.nome %}
+    {% include 'core/componentes/_campo.html' with campo=form_categoria.ativo %}
+    <div class="dialogo-acoes">
+      <button type="button" class="botao-secundario" id="botao-cancelar-categoria">Cancelar</button>
+      <button type="submit" class="botao-primario">Salvar</button>
+    </div>
+  </form>
+</dialog>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+  const dialogo = document.getElementById('dialogo-categoria');
+  const form = document.getElementById('form-categoria');
+  const titulo = document.getElementById('dialogo-categoria-titulo');
+  const botaoNova = document.getElementById('botao-nova-categoria');
+  const botaoFechar = document.getElementById('botao-fechar-categoria');
+  const botaoCancelar = document.getElementById('botao-cancelar-categoria');
+  const urlCriar = form.action;
+
+  function abrirParaNova() {
+    titulo.textContent = 'Nova categoria';
+    form.action = urlCriar;
+    form.reset();
+    dialogo.showModal();
+    form.querySelector('input[name="nome"]').focus();
+  }
+
+  function abrirParaEditar(botao) {
+    titulo.textContent = `Editar categoria "${botao.dataset.nome}"`;
+    form.action = botao.dataset.url;
+    form.querySelector('input[name="nome"]').value = botao.dataset.nome;
+    form.querySelector('input[name="ativo"]').checked = botao.dataset.ativo === 'true';
+    dialogo.showModal();
+    form.querySelector('input[name="nome"]').focus();
+  }
+
+  if (botaoNova) botaoNova.addEventListener('click', abrirParaNova);
+  document.querySelectorAll('.botao-editar-categoria').forEach((botao) => {
+    botao.addEventListener('click', () => abrirParaEditar(botao));
+  });
+  if (botaoFechar) botaoFechar.addEventListener('click', () => dialogo.close());
+  if (botaoCancelar) botaoCancelar.addEventListener('click', () => dialogo.close());
+
+  {% if form_categoria.errors %}
+  dialogo.showModal();
+  {% endif %}
+</script>
+{% endblock %}

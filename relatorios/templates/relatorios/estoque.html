@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Relatório de estoque — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Relatórios</h1>
+{% include 'relatorios/_abas.html' %}
+
+<h2>Valor em estoque</h2>
+<p>Valor total em estoque: <strong>{{ valor_total|brl }}</strong></p>
+
+{% if produtos %}
+<div class="tabela-scroll" role="region" aria-label="Valor de estoque por produto" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Valor em estoque por produto</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Estoque</th>
+        <th scope="col">Custo unitário</th>
+        <th scope="col">Valor em estoque</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for produto in produtos %}
+      <tr>
+        <th scope="row">{{ produto.nome }}</th>
+        <td>{{ produto.categoria.nome }}</td>
+        <td>{{ produto.estoque_total }}</td>
+        <td>{{ produto.preco_custo|brl }}</td>
+        <td>{{ produto.valor_estoque|brl }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto ativo cadastrado." %}
+{% endif %}
+{% endblock %}

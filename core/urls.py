@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 from django.views.generic import RedirectView
@@ -8,7 +9,11 @@ app_name = 'core'
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='core:painel'), name='inicio'),
-    path('login/', LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    path(
+        'login/',
+        login_not_required(LoginView.as_view(redirect_authenticated_user=True)),
+        name='login',
+    ),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('painel/', views.PainelView.as_view(), name='painel'),
     path('usuarios/', views.UsuarioListView.as_view(), name='usuario_lista'),

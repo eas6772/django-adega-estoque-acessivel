@@ -1,0 +1,142 @@
+ESTRUTURA DO PROJETO — EMPÓRIO BR (Django + PostgreSQL)
+
+emporio/
+│
+├── manage.py                          # Interface de comando Django
+├── pyproject.toml                     # Dependências (Django, psycopg, reportlab, django-environ)
+├── .env.example                       # Template de variáveis de ambiente
+│
+├── config/                            # Configuração central do projeto
+│   ├── __init__.py
+│   ├── settings/
+│   │   ├── base.py                   # Apps, middleware, autenticação, i18n, static
+│   │   ├── dev.py                    # DEBUG=True, toolbar opcional
+│   │   └── prod.py                   # Segurança HTTPS, logging, CONN_MAX_AGE
+│   ├── urls.py                        # include() de cada app com namespace
+│   ├── wsgi.py                        # Gunicorn/uWSGI
+│   └── asgi.py                        # ASGI para async
+│
+├── core/                              # Autenticação, painel, layout base, permissões
+│   ├── models.py                      # Usuario (AUTH_USER_MODEL), UsuarioManager
+│   ├── views.py                       # LoginView, PainelView, Usuario CRUD
+│   ├── urls.py                        # /login/, /painel/, /usuarios/
+│   ├── forms.py                       # AuthenticationForm, UsuarioForm, AcessivelMixin
+│   ├── permissoes.py                  # @login_not_required, @login_required_json
+│   ├── context_processors.py          # secao_ativa para menu
+│   ├── templatetags/
+│   │   └── ui.py                      # {% icone %}, |brl (formatação de moeda)
+│   ├── static/core/
+│   │   ├── css/styles.css             # Tokens WCAG, layout, componentes, PDV
+│   │   └── js/
+│   │       ├── api.js                 # Fetch + CSRF + tratamento 401
+│   │       ├── anunciador.js          # aria-live regions
+│   │       ├── dialogo.js             # <dialog> nativo com foco
+│   │       └── base.js                # Menu mobile, mensagens, resumo-erros
+│   └── templates/
+│       ├── base.html                  # Skip link, nav, main, footer
+│       ├── registration/login.html    # h1, botão show/hide senha
+│       ├── core/painel.html           # KPIs, tabelas de alertas
+│       ├── core/usuario_lista.html    # Tabela com edit/toggle
+│       ├── core/usuario_form.html     # Create/edit form
+│       └── core/componentes/          # Includes reutilizáveis
+│           ├── _campo.html            # Label + widget + dica + erro
+│           ├── _resumo_erros.html     # role="alert" com links
+│           ├── _paginacao.html        # Navegação com aria-current
+│           ├── _tabela_vazia.html     # Empty state
+│           └── _dialogo_confirmar.html # Generic confirm dialog
+│
+├── catalogo/                          # Categorias e produtos
+│   ├── models.py                      # Categoria, Produto (preco_venda calculado)
+│   ├── views.py                       # Categoria CRUD, Produto CRUD
+│   ├── urls.py                        # /categorias/, /produtos/
+│   ├── forms.py                       # CategoriaForm, ProdutoForm
+│   ├── static/catalogo/js/
+│   │   └── preco.js                   # Recalcula <output> do preço
+│   └── templates/catalogo/
+│       ├── categoria_lista.html       # Tabela + dialog inline
+│       ├── produto_lista.html         # Filtro, tabela, paginação
+│       └── produto_form.html          # Fieldset, output preço
+│
+├── estoque/                           # Lotes, entradas, ajustes, validade
+│   ├── models.py                      # Lote, Movimentacao, QuerySet.vendaveis()
+│   ├── views.py                       # Entrada, Ajuste, Validade, Movimentacao (list+filter)
+│   ├── urls.py                        # /entrada/, /ajuste/, /validade/, /movimentacoes/
+│   ├── forms.py                       # EntradaForm, AjusteForm, ValidadeForm, FiltroMovForm
+│   ├── servicos.py                    # registrar_entrada, ajustar_lote, alterar_validade (atomic)
+│   ├── api.py                         # GET /api/produtos/{id}/lotes/ (JSON)
+│   ├── static/estoque/js/
+│   │   └── ajuste.js                  # Fetch lotes ao trocar produto
+│   └── templates/estoque/
+│       ├── visao_geral.html           # Filtro status, tabela produtos
+│       ├── entrada_form.html          # Formulário entrada
+│       ├── ajuste_form.html           # Formulário ajuste (com Fetch)
+│       ├── validade_form.html         # Formulário validade
+│       └── movimentacao_lista.html    # Filtro período, tabela histórico
+│
+├── vendas/                            # PDV, vendas, recibos
+│   ├── models.py                      # Venda, ItemVenda (subtotal GeneratedField)
+│   ├── views.py                       # Venda list, ReciboView (parcial + full)
+│   ├── urls.py                        # /pdv/, /vendas/, /recibo/
+│   ├── forms.py                       # VendaForm (apenas validação)
+│   ├── servicos.py                    # registrar_venda (atomic + select_for_update)
+│   ├── api.py                         # POST /api/vendas/ (201/400/401/403/409)
+│   ├── tests/
+│   │   ├── test_servicos.py           # Testes de registrar_venda, concorrência
+│   │   └── test_api.py                # Testes de API endpoints
+│   ├── static/vendas/js/pdv/
+│   │   ├── main.js                    # Orquestra os módulos
+│   │   ├── busca.js                   # C1 - Combobox + listbox (debounce, AbortController)
+│   │   ├── dialogo-lote.js            # C2 - Dialog lote + qty
+│   │   ├── carrinho.js                # C3 - Map + sessionStorage
+│   │   ├── finalizar.js               # C5 - POST /api/vendas/ (trata 201/409)
+│   │   └── atalhos.js                 # C8 - F2/F9/Esc
+│   └── templates/vendas/
+│       ├── venda_lista.html           # Tabela com links para recibo
+│       ├── pdv.html                   # C1-C8: busca, carrinho, lote, finalizar, aria-live
+│       ├── recibo.html                # Full page (estende base.html)
+│       └── _recibo.html               # Fragmento (reusa em PDV via ?parcial=1)
+│
+├── relatorios/                        # 5 relatórios sem modelos próprios
+│   ├── views.py                       # EstoqueView, ReposicaoView, MaisVendidosView, LucroView, MovimentacoesView
+│   ├── urls.py                        # /estoque/, /reposicao/, /mais-vendidos/, /lucro/, /movimentacoes/
+│   ├── consultas.py                   # Querysets anotados (aggregate, values, F(), Q())
+│   ├── servicos_relatorio.py          # Geração de PDF para reposição
+│   ├── static/relatorios/
+│   │   └── (nenhum JS — relatórios são read-only)
+│   └── templates/relatorios/
+│       ├── _abas.html                 # Nav entre 5 relatórios (aria-current)
+│       ├── _filtro_periodo.html       # De/Até com fieldset
+│       ├── estoque.html               # Valor total em estoque
+│       ├── reposicao.html             # Produtos abaixo do mínimo
+│       ├── mais_vendidos.html         # Top produtos vendidos (período)
+│       ├── lucro.html                 # Lucro por produto (período)
+│       └── movimentacoes.html         # Histórico filtrado
+│
+├── docs/                              # Documentação técnica
+│   ├── projeto_django_spec.md         # Spec completa: modelos, DDL, rotas, componentes C1-C8
+│   ├── planejamento_views.md          # Justificativa da migração, código de referência
+│   └── melhorias_acessibilidade.md    # WCAG 2.2 AA, componentes, critérios de aceite
+│
+├── novo_app/                          # Referência (não é um app funcional)
+│   ├── models.py                      # Modelos originais do design
+│   └── hashers.py                     # Algoritmo Argon2 de referência
+│
+├── venv/                              # Virtual environment Python
+│
+├── requirements.txt                   # Django 6.1, psycopg[binary], django-environ, reportlab
+│
+├── Estruturando_Banco_Dados.txt       # Resumo Etapa 1 para relatório
+├── Criando_Backend.txt                # Resumo Etapa 2 para relatório
+└── Criando_Frontend.txt               # Resumo Etapa 3 para relatório
+
+
+LEGENDA
+═══════
+
+Etapa 1 (Estrutura): core/, catalogo/, estoque/, vendas/, relatorios/ → models.py + urls.py
+
+Etapa 2 (Aplicação): views.py + forms.py + servicos.py + api.py + permissoes.py + tests/
+
+Etapa 3 (Interface): templates/ + static/css/js + componentização + acessibilidade WCAG
+
+Tecnologias: Django 6.1 | PostgreSQL | Vanilla JS (ES modules + Fetch) | Sem framework JS

@@ -23,7 +23,7 @@ class VendaListView(SecaoAtivaMixin, ListView):
     secao_ativa = 'vendas'
 
     def get_queryset(self):
-        return Venda.objects.select_related('usuario').annotate(num_itens=Count('itens'))
+        return Venda.objects.select_related('usuario').annotate(num_itens=Count('itens')).order_by('-data')
 
 
 class ReciboView(SecaoAtivaMixin, DetailView):

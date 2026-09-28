@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Usuários — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cabecalho-pagina">
+  <h1>Usuários</h1>
+  <a href="{% url 'core:usuario_criar' %}" class="botao-primario">{% icone "person-plus-fill" %} Novo usuário</a>
+</div>
+
+{% if usuarios %}
+<div class="tabela-scroll" role="region" aria-label="Lista de usuários" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Usuários do sistema</caption>
+    <thead>
+      <tr>
+        <th scope="col">Nome</th>
+        <th scope="col">Perfil</th>
+        <th scope="col">Situação</th>
+        <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for usuario in usuarios %}
+      <tr>
+        <th scope="row">{{ usuario.nome }}</th>
+        <td>{{ usuario.get_perfil_display }}</td>
+        <td>
+          <span class="status {% if usuario.ativo %}status-ok{% else %}status-zerado{% endif %}">
+            {% icone "check-circle-fill" %}
+            {{ usuario.ativo|yesno:"Ativo,Inativo" }}
+          </span>
+        </td>
+        <td class="celula-acoes">
+          <a href="{% url 'core:usuario_editar' usuario.pk %}" aria-label="Editar {{ usuario.nome }}">{% icone "pencil-fill" %}</a>
+          {% if usuario.pk != request.user.pk %}
+          <button type="button" class="botao-icone"
+                  data-confirmar-url="{% url 'core:usuario_alternar' usuario.pk %}"
+                  data-confirmar-mensagem="{% if usuario.ativo %}Desativar{% else %}Ativar{% endif %} o usuário &quot;{{ usuario.nome }}&quot;?"
+                  data-confirmar-texto="{% if usuario.ativo %}Desativar{% else %}Ativar{% endif %}"
+                  aria-label="{% if usuario.ativo %}Desativar{% else %}Ativar{% endif %} {{ usuario.nome }}">
+            {% icone "power" %}
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum usuário cadastrado." %}
+{% endif %}
+{% endblock %}

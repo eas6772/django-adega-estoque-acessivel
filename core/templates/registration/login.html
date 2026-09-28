@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Entrar — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cartao cartao-login">
+  <p class="marca">Empório BR</p>
+  <h1>Entrar no Empório BR</h1>
+
+  {% if form.non_field_errors %}
+    <div class="resumo-erros" role="alert" tabindex="-1" id="resumo-erros">
+      <p class="resumo-erros-titulo">{% icone "exclamation-triangle-fill" %} Não foi possível entrar</p>
+      <ul>
+        {% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'core:login' %}" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+
+    <div class="campo">
+      <label for="id_username">Nome de usuário</label>
+      <input type="text" id="id_username" name="username" autocomplete="username" required autofocus
+             value="{{ form.username.value|default:'' }}"
+             {% if form.username.errors %}aria-invalid="true" aria-describedby="id_username-erro"{% endif %}>
+      {% if form.username.errors %}
+        <p class="campo-erro" id="id_username-erro">{{ form.username.errors|join:" " }}</p>
+      {% endif %}
+    </div>
+
+    <div class="campo">
+      <label for="id_password">Senha</label>
+      <div class="campo-com-botao">
+        <input type="password" id="id_password" name="password" autocomplete="current-password" required
+               {% if form.password.errors %}aria-invalid="true" aria-describedby="id_password-erro"{% endif %}>
+        <button type="button" id="botao-mostrar-senha" class="botao-icone" aria-pressed="false" aria-controls="id_password" aria-label="Mostrar senha">
+          {% icone "eye-fill" %}
+        </button>
+      </div>
+      {% if form.password.errors %}
+        <p class="campo-erro" id="id_password-erro">{{ form.password.errors|join:" " }}</p>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="botao-primario">Entrar</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+  const botao = document.getElementById('botao-mostrar-senha');
+  const campo = document.getElementById('id_password');
+  botao.addEventListener('click', () => {
+    const mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    botao.setAttribute('aria-pressed', String(mostrar));
+    botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+  });
+</script>
+{% endblock %}

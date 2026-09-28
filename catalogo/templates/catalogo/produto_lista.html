@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Produtos — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cabecalho-pagina">
+  <h1>Produtos</h1>
+  {% if user.is_admin %}
+  <a href="{% url 'catalogo:produto_criar' %}" class="botao-primario">{% icone "plus-lg" %} Novo produto</a>
+  {% endif %}
+</div>
+
+<form method="get" role="search" aria-label="Filtrar produtos">
+  <div class="campo">
+    <label for="{{ filtro.q.id_for_label }}">Buscar por nome, fabricante ou código de barras</label>
+    {{ filtro.q }}
+  </div>
+  <div class="campo">
+    <label for="{{ filtro.categoria.id_for_label }}">Categoria</label>
+    {{ filtro.categoria }}
+  </div>
+  <div class="campo campo-checkbox">
+    <label for="{{ filtro.mostrar_inativos.id_for_label }}">{{ filtro.mostrar_inativos }} Mostrar inativos</label>
+  </div>
+  <button type="submit" class="botao-secundario">{% icone "search" %} Filtrar</button>
+  <a href="{% url 'catalogo:produto_lista' %}" class="botao-secundario" aria-label="Limpar filtros">{% icone "x-lg" %} Limpar</a>
+</form>
+
+{% if produtos %}
+<div class="tabela-scroll" role="region" aria-label="Lista de produtos" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Produtos cadastrados</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Preço de venda</th>
+        <th scope="col">Estoque</th>
+        <th scope="col">Situação</th>
+        <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for produto in produtos %}
+      <tr>
+        <th scope="row">{{ produto.nome }} <span class="texto-secundario">{{ produto.fabricante }}</span></th>
+        <td>{{ produto.categoria.nome }}</td>
+        <td>{{ produto.preco_venda|brl }}</td>
+        <td>
+          <span class="status {% if produto.estoque_total == 0 %}status-zerado{% elif produto.estoque_total <= produto.estoque_minimo %}status-baixo{% else %}status-ok{% endif %}">
+            {{ produto.estoque_total }}
+            {% if produto.estoque_total == 0 %}(zerado){% elif produto.estoque_total <= produto.estoque_minimo %}(baixo){% endif %}
+          </span>
+        </td>
+        <td>
+          <span class="status {% if produto.ativo %}status-ok{% else %}status-zerado{% endif %}">
+            {{ produto.ativo|yesno:"Ativo,Inativo" }}
+          </span>
+        </td>
+        <td class="celula-acoes">
+          {% if user.is_admin %}
+          <a href="{% url 'catalogo:produto_editar' produto.pk %}" aria-label="Editar {{ produto.nome }}">{% icone "pencil-fill" %}</a>
+          <button type="button" class="botao-icone"
+                  data-confirmar-url="{% url 'catalogo:produto_alternar' produto.pk %}"
+                  data-confirmar-mensagem="{% if produto.ativo %}Desativar{% else %}Ativar{% endif %} o produto &quot;{{ produto.nome }}&quot;?"
+                  data-confirmar-texto="{% if produto.ativo %}Desativar{% else %}Ativar{% endif %}"
+                  aria-label="{% if produto.ativo %}Desativar{% else %}Ativar{% endif %} {{ produto.nome }}">
+            {% icone "power" %}
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto encontrado." %}
+{% endif %}
+{% endblock %}
