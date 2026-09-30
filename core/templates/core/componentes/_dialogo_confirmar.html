@@ -1,0 +1,25 @@
+{% comment %}
+Diálogo de confirmação genérico, incluído UMA VEZ em base.html e reaproveitado
+por qualquer botão "alternar ativo" dos 3 apps (usuários, categorias,
+produtos). O botão que abre define data-confirmar-url/-mensagem/-texto;
+core/static/core/js/dialogo.js lê esses atributos, preenche o diálogo e,
+na confirmação, envia o form oculto (com o CSRF token) para a URL do botão.
+{% endcomment %}
+<dialog id="dialogo-confirmar" class="dialogo" aria-labelledby="dialogo-confirmar-titulo">
+  <form method="dialog">
+    <div class="dialogo-cabecalho">
+      <h2 id="dialogo-confirmar-titulo">Confirmar ação</h2>
+      <button type="submit" value="cancelar" class="botao-icone" aria-label="Fechar" formnovalidate>
+        {% load ui %}{% icone "x-lg" %}
+      </button>
+    </div>
+    <p id="dialogo-confirmar-mensagem"></p>
+    <div class="dialogo-acoes">
+      <button type="submit" value="cancelar" class="botao-secundario" formnovalidate>Cancelar</button>
+      <button type="submit" value="confirmar" class="botao-perigo" id="dialogo-confirmar-botao">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+<form id="form-confirmar-alvo" method="post" hidden>
+  {% csrf_token %}
+</form>

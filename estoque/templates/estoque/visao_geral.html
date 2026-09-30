@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Estoque — Empório BR{% endblock %}
+
+{% block content %}
+<div class="cabecalho-pagina">
+  <h1>Estoque</h1>
+  <div class="grupo-botoes">
+    <a href="{% url 'estoque:entrada' %}" class="botao-primario">{% icone "box-arrow-in-down" %} Registrar entrada</a>
+    {% if user.is_admin %}
+    <a href="{% url 'estoque:ajuste' %}" class="botao-secundario">{% icone "sliders" %} Ajustar</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="filtro-status" role="group" aria-label="Filtrar por situação">
+  <a href="{% url 'estoque:visao_geral' %}" {% if not request.GET.status %}aria-current="true"{% endif %}>Todos</a>
+  <a href="?status=baixo" {% if request.GET.status == 'baixo' %}aria-current="true"{% endif %}>Estoque baixo</a>
+  <a href="?status=zerado" {% if request.GET.status == 'zerado' %}aria-current="true"{% endif %}>Zerado</a>
+</div>
+
+{% if produtos %}
+<div class="tabela-scroll" role="region" aria-label="Produtos em estoque" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Situação do estoque por produto</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Estoque</th>
+        <th scope="col">Mínimo</th>
+        <th scope="col">Máximo</th>
+        <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for produto in produtos %}
+      <tr>
+        <th scope="row">{{ produto.nome }}</th>
+        <td>{{ produto.categoria.nome }}</td>
+        <td>
+          <span class="status {% if produto.estoque_total == 0 %}status-zerado{% elif produto.estoque_total <= produto.estoque_minimo %}status-baixo{% else %}status-ok{% endif %}">
+            {{ produto.estoque_total }}
+            {% if produto.estoque_total == 0 %}(zerado){% elif produto.estoque_total <= produto.estoque_minimo %}(baixo){% endif %}
+          </span>
+        </td>
+        <td>{{ produto.estoque_minimo }}</td>
+        <td>{{ produto.estoque_maximo }}</td>
+        <td class="celula-acoes">
+          <a href="{% url 'estoque:entrada' %}?produto_id={{ produto.pk }}" aria-label="Registrar entrada de {{ produto.nome }}">{% icone "box-arrow-in-down" %}</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto encontrado para este filtro." %}
+{% endif %}
+{% endblock %}

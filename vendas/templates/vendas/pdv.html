@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static ui %}
+{% block title %}Frente de caixa — Empório BR{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<h1>Frente de caixa</h1>
+<p class="dica-atalhos">Atalhos: <kbd>F2</kbd> buscar produto · <kbd>F9</kbd> finalizar venda · <kbd>Esc</kbd> fechar lista ou diálogo.</p>
+
+<div class="pdv-layout">
+  <section aria-labelledby="t-busca" class="cartao">
+    <h2 id="t-busca">Adicionar produto</h2>
+    <div class="busca-wrapper">
+      <label for="busca-produto">Buscar produto</label>
+      <p id="busca-dica" class="campo-dica">
+        Digite ao menos 2 letras do nome, fabricante ou leia o código de barras.
+        Use as setas para escolher e Enter para selecionar.
+      </p>
+      <input id="busca-produto" type="text" role="combobox" autocomplete="off"
+             aria-autocomplete="list" aria-expanded="false" aria-controls="resultados-busca"
+             aria-describedby="busca-dica" aria-keyshortcuts="F2">
+      <ul id="resultados-busca" role="listbox" aria-label="Produtos encontrados" hidden></ul>
+    </div>
+
+    <template id="tpl-resultado">
+      <li role="option" class="resultado-busca" aria-selected="false">
+        <span class="produto-nome"></span>
+        <span class="produto-fabricante"></span>
+        <span class="resultado-meta"><span class="produto-preco"></span> · <span class="produto-estoque"></span></span>
+      </li>
+    </template>
+  </section>
+
+  <section aria-labelledby="t-carrinho" class="cartao">
+    <h2 id="t-carrinho">Carrinho (<span id="carrinho-contagem">0</span> produtos)</h2>
+    <div class="tabela-scroll" role="region" aria-labelledby="t-carrinho" tabindex="0">
+      <table id="tabela-carrinho">
+        <caption class="visualmente-oculto">Itens do carrinho</caption>
+        <thead>
+          <tr>
+            <th scope="col">Produto</th>
+            <th scope="col">Quantidade</th>
+            <th scope="col">Preço unit.</th>
+            <th scope="col">Subtotal</th>
+            <th scope="col"><span class="visualmente-oculto">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody id="carrinho-corpo"></tbody>
+      </table>
+    </div>
+    <p id="carrinho-vazio" class="estado-vazio">Nenhum produto no carrinho.</p>
+
+    <template id="tpl-linha-carrinho">
+      <tr>
+        <th scope="row" class="carrinho-nome"></th>
+        <td class="carrinho-qtd-celula">
+          <button type="button" class="botao-icone carrinho-diminuir" aria-label="">−</button>
+          <output class="carrinho-qtd-valor" aria-label=""></output>
+          <button type="button" class="botao-icone carrinho-aumentar" aria-label="">+</button>
+        </td>
+        <td class="carrinho-preco"></td>
+        <td class="carrinho-subtotal"></td>
+        <td>
+          <button type="button" class="botao-icone botao-icone-perigo carrinho-remover" aria-label="">
+            {% icone "trash-fill" %}
+          </button>
+        </td>
+      </tr>
+    </template>
+  </section>
+
+  <aside aria-labelledby="t-resumo" class="cartao">
+    <h2 id="t-resumo">Resumo da venda</h2>
+    <dl class="recibo-metadados">
+      <dt>Itens</dt>
+      <dd id="resumo-itens">0</dd>
+      <dt>Total</dt>
+      <dd id="resumo-total">R$ 0,00</dd>
+    </dl>
+    <p id="finalizar-dica" class="campo-dica">Adicione ao menos um produto ao carrinho para finalizar.</p>
+    <button type="button" id="btn-finalizar" class="botao-primario" aria-keyshortcuts="F9" aria-describedby="finalizar-dica">
+      {% icone "check-circle-fill" %} Finalizar venda
+    </button>
+
+    <section id="painel-recibo" aria-labelledby="recibo-titulo" hidden></section>
+  </aside>
+</div>
+
+<dialog id="dialogo-lote" class="dialogo" aria-labelledby="dialogo-lote-titulo" aria-describedby="dialogo-lote-desc">
+  <form method="dialog">
+    <div class="dialogo-cabecalho">
+      <h2 id="dialogo-lote-titulo">Selecionar lote</h2>
+      <button type="submit" value="cancelar" class="botao-icone" aria-label="Fechar" formnovalidate>
+        {% icone "x-lg" %}
+      </button>
+    </div>
+    <p id="dialogo-lote-desc"><span id="dialogo-lote-produto"></span></p>
+
+    <div class="campo">
+      <label for="lote-select">Lote <span class="obrigatorio" aria-hidden="true">*</span></label>
+      <select id="lote-select" required aria-describedby="lote-info" aria-busy="true">
+        <option value="">Carregando lotes…</option>
+      </select>
+      <p class="campo-dica" id="lote-info" aria-live="polite"></p>
+    </div>
+
+    <div class="campo">
+      <label for="lote-qtd">Quantidade <span class="obrigatorio" aria-hidden="true">*</span></label>
+      <input id="lote-qtd" type="number" min="1" value="1" inputmode="numeric" required aria-describedby="lote-qtd-info lote-qtd-erro">
+      <p class="campo-dica" id="lote-qtd-info"></p>
+      <p class="campo-erro" id="lote-qtd-erro"></p>
+    </div>
+
+    <div class="dialogo-acoes">
+      <button type="submit" value="cancelar" class="botao-secundario" formnovalidate>Cancelar</button>
+      <button type="submit" value="adicionar" class="botao-primario">
+        {% icone "cart-plus-fill" %} Adicionar ao carrinho
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<div id="anuncio-status" class="visualmente-oculto" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="anuncio-alerta" class="visualmente-oculto" role="alert" aria-live="assertive" aria-atomic="true"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{% static 'vendas/js/pdv/main.js' %}"></script>
+{% endblock %}

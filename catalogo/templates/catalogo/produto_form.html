@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if object %}Editar produto{% else %}Novo produto{% endif %} — Empório BR{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Editar produto "{{ object.nome }}"{% else %}Novo produto{% endif %}</h1>
+
+{% include 'core/componentes/_resumo_erros.html' with form=form %}
+
+<form method="post" novalidate id="form-produto">
+  {% csrf_token %}
+  <p class="legenda-obrigatorios">Campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+
+  <fieldset>
+    <legend>Informações básicas</legend>
+    {% include 'core/componentes/_campo.html' with campo=form.nome %}
+    {% include 'core/componentes/_campo.html' with campo=form.categoria %}
+    {% include 'core/componentes/_campo.html' with campo=form.fabricante %}
+    {% include 'core/componentes/_campo.html' with campo=form.volume %}
+    {% include 'core/componentes/_campo.html' with campo=form.peso %}
+    {% include 'core/componentes/_campo.html' with campo=form.codigo_barras %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Precificação</legend>
+    {% include 'core/componentes/_campo.html' with campo=form.preco_custo %}
+    {% include 'core/componentes/_campo.html' with campo=form.margem_lucro %}
+    <div class="campo">
+      <label for="preco-venda-calculado">Preço de venda</label>
+      <output id="preco-venda-calculado" for="{{ form.preco_custo.id_for_label }} {{ form.margem_lucro.id_for_label }}" aria-live="polite">
+        {{ object.preco_venda|default:"R$ 0,00" }}
+      </output>
+      <p class="campo-dica">Calculado automaticamente: custo × (1 + margem / 100).</p>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Limites de estoque</legend>
+    {% include 'core/componentes/_campo.html' with campo=form.estoque_minimo %}
+    {% include 'core/componentes/_campo.html' with campo=form.estoque_maximo %}
+    {% include 'core/componentes/_campo.html' with campo=form.ativo %}
+  </fieldset>
+
+  <div class="acoes-form">
+    <a href="{% url 'catalogo:produto_lista' %}" class="botao-secundario">Cancelar</a>
+    <button type="submit" class="botao-primario">Salvar</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{% static 'catalogo/js/preco.js' %}"></script>
+{% endblock %}

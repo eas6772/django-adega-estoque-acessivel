@@ -1,0 +1,8 @@
+{% comment %}
+Uso: {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto encontrado." %}
+{% endcomment %}
+{% load ui %}
+<p class="estado-vazio">
+  {% icone "inbox" %}
+  {{ mensagem|default:"Nenhum registro encontrado." }}
+</p>

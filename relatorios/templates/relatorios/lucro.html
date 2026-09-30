@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Lucro — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Relatórios</h1>
+{% include 'relatorios/_abas.html' %}
+<h2>Lucro por produto</h2>
+{% include 'relatorios/_filtro_periodo.html' %}
+
+{% if itens %}
+<div class="tabela-scroll" role="region" aria-label="Lucro por produto" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Lucro por produto no período</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Receita</th>
+        <th scope="col">Custo</th>
+        <th scope="col">Lucro</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in itens %}
+      <tr>
+        <th scope="row">{{ item.produto__nome }}</th>
+        <td>{{ item.receita|brl }}</td>
+        <td>{{ item.custo|brl }}</td>
+        <td>
+          <span class="status {% if item.lucro < 0 %}status-zerado{% else %}status-ok{% endif %}">
+            {{ item.lucro|brl }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma venda registrada neste período." %}
+{% endif %}
+{% endblock %}

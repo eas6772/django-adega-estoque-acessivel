@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Registrar entrada — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Registrar entrada de estoque</h1>
+
+{% include 'core/componentes/_resumo_erros.html' with form=form %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  <p class="legenda-obrigatorios">Campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+
+  {% include 'core/componentes/_campo.html' with campo=form.produto %}
+  {% include 'core/componentes/_campo.html' with campo=form.quantidade %}
+  {% include 'core/componentes/_campo.html' with campo=form.numero_lote %}
+  {% include 'core/componentes/_campo.html' with campo=form.data_validade %}
+  {% include 'core/componentes/_campo.html' with campo=form.motivo %}
+
+  <div class="acoes-form">
+    <a href="{% url 'estoque:visao_geral' %}" class="botao-secundario">Cancelar</a>
+    <button type="submit" class="botao-primario">Registrar</button>
+  </div>
+</form>
+{% endblock %}

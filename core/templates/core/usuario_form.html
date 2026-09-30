@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}Editar usuário{% else %}Novo usuário{% endif %} — Empório BR{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Editar usuário "{{ object.nome }}"{% else %}Novo usuário{% endif %}</h1>
+
+{% include 'core/componentes/_resumo_erros.html' with form=form %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  <p class="legenda-obrigatorios">Campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+
+  {% include 'core/componentes/_campo.html' with campo=form.nome %}
+  {% include 'core/componentes/_campo.html' with campo=form.perfil %}
+  {% include 'core/componentes/_campo.html' with campo=form.ativo %}
+  {% include 'core/componentes/_campo.html' with campo=form.senha %}
+  {% include 'core/componentes/_campo.html' with campo=form.confirmar_senha %}
+
+  <div class="acoes-form">
+    <a href="{% url 'core:usuario_lista' %}" class="botao-secundario">Cancelar</a>
+    <button type="submit" class="botao-primario">Salvar</button>
+  </div>
+</form>
+{% endblock %}

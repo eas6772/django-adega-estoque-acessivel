@@ -1,0 +1,42 @@
+{% load ui %}
+<h2 id="recibo-titulo" tabindex="-1">Recibo da venda #{{ venda.pk }}</h2>
+<dl class="recibo-metadados">
+  <dt>Data</dt>
+  <dd><time datetime="{{ venda.data|date:'c' }}">{{ venda.data|date:'d/m/Y H:i' }}</time></dd>
+  <dt>Operador</dt>
+  <dd>{{ venda.usuario.nome }}</dd>
+</dl>
+
+<div class="tabela-scroll" role="region" aria-label="Itens da venda" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Itens da venda #{{ venda.pk }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Quantidade</th>
+        <th scope="col">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in itens_agrupados %}
+      <tr>
+        <th scope="row">{{ item.produto__nome }}</th>
+        <td>{{ item.quantidade }}</td>
+        <td>{{ item.subtotal|brl }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Total</th>
+        <td></td>
+        <td>{{ venda.total|brl }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="acoes-form recibo-acoes">
+  <button type="button" class="botao-secundario" id="botao-imprimir-recibo">{% icone "printer-fill" %} Imprimir</button>
+  <button type="button" class="botao-primario" id="botao-nova-venda">{% icone "plus-lg" %} Nova venda</button>
+</div>

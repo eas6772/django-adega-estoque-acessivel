@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load ui %}
+{% block title %}Mais vendidos — Empório BR{% endblock %}
+
+{% block content %}
+<h1>Relatórios</h1>
+{% include 'relatorios/_abas.html' %}
+<h2>Produtos mais vendidos</h2>
+{% include 'relatorios/_filtro_periodo.html' %}
+
+{% if itens %}
+<div class="tabela-scroll" role="region" aria-label="Produtos mais vendidos" tabindex="0">
+  <table>
+    <caption class="visualmente-oculto">Produtos mais vendidos no período</caption>
+    <thead>
+      <tr>
+        <th scope="col">Produto</th>
+        <th scope="col">Fabricante</th>
+        <th scope="col">Quantidade vendida</th>
+        <th scope="col">Receita</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in itens %}
+      <tr>
+        <th scope="row">{{ item.produto__nome }}</th>
+        <td>{{ item.produto__fabricante|default:"—" }}</td>
+        <td>{{ item.qtd }}</td>
+        <td>{{ item.receita|brl }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'core/componentes/_paginacao.html' with page_obj=page_obj %}
+{% else %}
+  {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma venda registrada neste período." %}
+{% endif %}
+{% endblock %}
