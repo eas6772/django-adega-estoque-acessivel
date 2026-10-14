@@ -2,20 +2,11 @@
 Views de core: painel (dashboard) e gestão de usuários. Ver
 docs/projeto_django_spec.md §3.1.
 """
-from decimal import Decimal
-
 from django.contrib import messages
-from django.db.models import Sum
-from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
-
-from catalogo.models import Produto
-from estoque.models import Lote
-from vendas.models import Venda
 
 from .forms import UsuarioCriarForm, UsuarioEditarForm
 from .models import Usuario
@@ -37,20 +28,6 @@ class SecaoAtivaMixin:
 class PainelView(SecaoAtivaMixin, TemplateView):
     template_name = 'core/painel.html'
     secao_ativa = 'painel'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        hoje = timezone.localdate()
-        vendas_hoje = Venda.objects.filter(data__date=hoje)
-        context['produtos_abaixo_do_minimo'] = (
-            Produto.objects.ativos().abaixo_do_minimo().select_related('categoria')
-        )
-        context['lotes_vencendo'] = Lote.objects.vencendo_em(30).select_related('produto')
-        context['qtd_vendas_hoje'] = vendas_hoje.count()
-        context['total_vendas_hoje'] = vendas_hoje.aggregate(
-            total=Coalesce(Sum('total'), Decimal('0.00'))
-        )['total']
-        return context
 
 
 class UsuarioListView(AdminRequiredMixin, SecaoAtivaMixin, ListView):

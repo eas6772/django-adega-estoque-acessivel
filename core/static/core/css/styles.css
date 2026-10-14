@@ -170,6 +170,10 @@ a {
   flex: 1;
 }
 
+#conteudo.conteudo-painel {
+  padding: 0;
+}
+
 @media (max-width: 768px) {
   .menu-toggle {
     display: inline-flex;
@@ -528,6 +532,21 @@ tbody tr:hover {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 4px 0 0;
+}
+
+/* ---------- Painel (página inicial) ---------- */
+.painel-boas-vindas {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.painel-imagem-destaque {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 /* ---------- Mensagens (django.contrib.messages) ---------- */
