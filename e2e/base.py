@@ -4,7 +4,7 @@ Infraestrutura dos testes e2e: servidor Django real (StaticLiveServerTestCase)
 
     python manage.py test e2e --keepdb
 
-Requer `pip install -r requirements-dev.txt` e `playwright install chromium`.
+Requer `pip install -e ".[dev]"` e `playwright install chromium`.
 """
 import os
 

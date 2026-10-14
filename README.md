@@ -50,7 +50,7 @@ O ecossistema do projeto foi construído utilizando tecnologias robustas e de me
 
 3. **Instalar as dependências:**
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 4. **Configurar as variáveis de ambiente:**
