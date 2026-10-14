@@ -12,6 +12,7 @@ const select = document.getElementById('lote-select');
 const infoLote = document.getElementById('lote-info');
 const campoQtd = document.getElementById('lote-qtd');
 const erroQtd = document.getElementById('lote-qtd-erro');
+const infoQtd = document.getElementById('lote-qtd-info');
 
 let produtoAtual = null;
 let lotesAtuais = [];
@@ -19,6 +20,13 @@ let lotesAtuais = [];
 function limparErroQtd() {
   erroQtd.textContent = '';
   campoQtd.removeAttribute('aria-invalid');
+}
+
+// Sem atributo `max` de propósito: a validação nativa do navegador
+// bloquearia o submit com um balão próprio, antes de o erro acessível em
+// #lote-qtd-erro (aria-invalid) aparecer. O limite é validado no submit.
+function mostrarSaldo(lote) {
+  infoQtd.textContent = lote ? `Saldo do lote: ${lote.quantidade} un.` : '';
 }
 
 function popularSelect(lotes) {
@@ -35,6 +43,9 @@ function popularSelect(lotes) {
 
 async function abrirDialogoParaProduto(produto) {
   produtoAtual = produto;
+  // returnValue persiste entre aberturas: sem zerar, um Esc depois de uma
+  // adição reaproveitaria "adicionar" e incluiria o item sem o usuário pedir.
+  dialogo.returnValue = '';
   produtoDesc.textContent = `${produto.nome}${produto.fabricante ? ' — ' + produto.fabricante : ''}`;
   select.setAttribute('aria-busy', 'true');
   select.replaceChildren();
@@ -76,8 +87,9 @@ async function abrirDialogoParaProduto(produto) {
   }
 
   popularSelect(lotesAtuais);
-  campoQtd.max = String(lotesAtuais[0].quantidade);
-  abrir(dialogo, select);
+  mostrarSaldo(lotesAtuais[0]);
+  // Um único lote já vem pré-selecionado: foco direto na quantidade (spec C2).
+  abrir(dialogo, lotesAtuais.length === 1 ? campoQtd : select);
 }
 
 function adicionarAoCarrinho(lote, quantidade) {
@@ -95,8 +107,14 @@ function adicionarAoCarrinho(lote, quantidade) {
 
 select.addEventListener('change', () => {
   const lote = lotesAtuais.find((l) => String(l.id) === select.value);
-  if (lote) campoQtd.max = String(lote.quantidade);
+  mostrarSaldo(lote);
   limparErroQtd();
+});
+
+// Fechar e Cancelar são type="button": se fossem submit, o primeiro deles na
+// ordem do DOM viraria o botão padrão do Enter e cancelaria a venda por teclado.
+dialogo.querySelectorAll('[data-fechar-dialogo]').forEach((botao) => {
+  botao.addEventListener('click', () => dialogo.close('cancelar'));
 });
 
 // Intercepta o submit (method="dialog") ANTES do diálogo fechar: se a

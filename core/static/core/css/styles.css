@@ -358,6 +358,9 @@ form[role="search"] {
 
 /* ---------- Tabelas ---------- */
 .tabela-scroll {
+  /* Contêiner posicionado: os .visualmente-oculto (position: absolute) das
+     tabelas ficam presos aqui e não alargam a página (WCAG 1.4.10). */
+  position: relative;
   overflow-x: auto;
   border: 1px solid var(--borda);
   border-radius: var(--radius-md);
@@ -663,7 +666,9 @@ dialog.dialogo::backdrop {
 
 .pdv-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): sem isso a tabela do carrinho alarga a coluna e a página
+     rola na horizontal em zoom 400% (WCAG 1.4.10); quem rola é .tabela-scroll. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas: "busca resumo" "carrinho resumo";
   gap: 20px;
   align-items: start;
@@ -675,7 +680,7 @@ dialog.dialogo::backdrop {
 
 @media (max-width: 900px) {
   .pdv-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "busca" "carrinho" "resumo";
   }
 }

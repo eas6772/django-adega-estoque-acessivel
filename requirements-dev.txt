@@ -1,0 +1,7 @@
+# Dependências só de desenvolvimento/teste (não vão para produção).
+-r requirements.txt
+
+# Testes de ponta a ponta e de acessibilidade (pasta e2e/).
+# Depois de instalar: playwright install chromium
+playwright==1.64.0
+axe-playwright-python==0.1.8

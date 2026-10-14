@@ -90,7 +90,7 @@
   <form method="dialog">
     <div class="dialogo-cabecalho">
       <h2 id="dialogo-lote-titulo">Selecionar lote</h2>
-      <button type="submit" value="cancelar" class="botao-icone" aria-label="Fechar" formnovalidate>
+      <button type="button" class="botao-icone" aria-label="Fechar" data-fechar-dialogo>
         {% icone "x-lg" %}
       </button>
     </div>
@@ -112,7 +112,7 @@
     </div>
 
     <div class="dialogo-acoes">
-      <button type="submit" value="cancelar" class="botao-secundario" formnovalidate>Cancelar</button>
+      <button type="button" class="botao-secundario" data-fechar-dialogo>Cancelar</button>
       <button type="submit" value="adicionar" class="botao-primario">
         {% icone "cart-plus-fill" %} Adicionar ao carrinho
       </button>
