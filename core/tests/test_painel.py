@@ -121,7 +121,7 @@ class PainelEstruturaTestCase(PainelBase):
     def test_banner_fica_dentro_do_main(self):
         html = self.abrir('caixa').content.decode()
         main = re.search(r'<main id="conteudo".*?</main>', html, re.S).group(0)
-        self.assertIn('core/imagens/banner_emporioBR.jpg', main)
+        self.assertIn('core/imagens/baner3.jpg', main)
         self.assertIn('Estoque baixo', main)
         self.assertIn('Próximos ao vencimento', main)
 
