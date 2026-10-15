@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Estoque — Empório BR{% endblock %}
+{% block titulo_pagina %}Visão geral{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Estoque</h1>
   <div class="grupo-botoes">
     <a href="{% url 'estoque:entrada' %}" class="botao-primario">{% icone "box-arrow-in-down" %} Registrar entrada</a>
     {% if user.is_admin %}

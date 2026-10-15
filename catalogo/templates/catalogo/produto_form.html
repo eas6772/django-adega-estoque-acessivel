@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{% if object %}Editar produto{% else %}Novo produto{% endif %} — Empório BR{% endblock %}
+{% block titulo_pagina %}{% if object %}Editar produto "{{ object.nome }}"{% else %}Novo produto{% endif %}{% endblock %}
 
 {% block content %}
-<h1>{% if object %}Editar produto "{{ object.nome }}"{% else %}Novo produto{% endif %}</h1>
 
 {% include 'core/componentes/_resumo_erros.html' with form=form %}
 

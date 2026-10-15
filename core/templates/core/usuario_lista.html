@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Usuários — Empório BR{% endblock %}
+{% block titulo_pagina %}Usuários{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Usuários</h1>
   <a href="{% url 'core:usuario_criar' %}" class="botao-primario">{% icone "person-plus-fill" %} Novo usuário</a>
 </div>
 

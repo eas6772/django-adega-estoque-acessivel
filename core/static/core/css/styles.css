@@ -158,6 +158,16 @@ a {
   display: none;
 }
 
+/* Título da página (h1) na topbar: ocupa o espaço livre e empurra o usuário para a direita. */
+.topbar-titulo {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 .topbar-usuario {
   display: flex;
   align-items: center;
@@ -464,8 +474,13 @@ tbody tr:hover {
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 20px;
+}
+
+/* Sem o h1, o cabeçalho só guarda ações; some quando não há nenhuma (ex.: operador). */
+.cabecalho-pagina:not(:has(*)) {
+  display: none;
 }
 
 .grupo-botoes {

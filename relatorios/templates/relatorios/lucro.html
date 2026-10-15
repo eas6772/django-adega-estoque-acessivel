@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Lucro — Empório BR{% endblock %}
+{% block titulo_pagina %}Lucro{% endblock %}
 
 {% block content %}
-<h1>Relatórios</h1>
 {% include 'relatorios/_abas.html' %}
 <h2>Lucro por produto</h2>
 {% include 'relatorios/_filtro_periodo.html' %}

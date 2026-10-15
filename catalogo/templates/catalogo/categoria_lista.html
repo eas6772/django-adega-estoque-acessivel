@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Categorias — Empório BR{% endblock %}
+{% block titulo_pagina %}Categorias{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Categorias</h1>
   {% if user.is_admin %}
   <button type="button" class="botao-primario" id="botao-nova-categoria">{% icone "folder-plus" %} Nova categoria</button>
   {% endif %}

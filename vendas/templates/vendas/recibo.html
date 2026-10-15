@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Recibo da venda #{{ venda.pk }} — Empório BR{% endblock %}
+{% block titulo_pagina %}Recibo da venda #{{ venda.pk }}{% endblock %}
 
 {% block content %}
 {% include 'vendas/_recibo.html' %}

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Produtos — Empório BR{% endblock %}
+{% block titulo_pagina %}Produtos{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Produtos</h1>
   {% if user.is_admin %}
   <a href="{% url 'catalogo:produto_criar' %}" class="botao-primario">{% icone "plus-lg" %} Novo produto</a>
   {% endif %}

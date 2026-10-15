@@ -60,6 +60,7 @@
         <button type="button" id="menu-toggle" class="botao-icone menu-toggle" aria-controls="menu-lateral" aria-expanded="false" aria-label="Abrir menu">
           {% icone "list" %}
         </button>
+        <h1 class="topbar-titulo">{% block titulo_pagina %}Empório BR{% endblock %}</h1>
         <p class="visualmente-oculto"><strong>Empório BR</strong> — gestão de estoque</p>
         {% if user.is_authenticated %}
         <div class="topbar-usuario">
