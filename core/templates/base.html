@@ -64,7 +64,7 @@
         <p class="visualmente-oculto"><strong>Empório BR</strong> — gestão de estoque</p>
         {% if user.is_authenticated %}
         <div class="topbar-usuario">
-          <span>{{ user.nome }} · {{ user.get_perfil_display }}</span>
+          <p class="usuario-ativo">{% icone "person-circle" %}<strong>{{ user.nome }}</strong><span class="usuario-perfil">{{ user.get_perfil_display }}</span></p>
           <form method="post" action="{% url 'core:logout' %}">
             {% csrf_token %}
             <button type="submit" class="botao-icone" aria-label="Sair do sistema">{% icone "box-arrow-right" %}</button>

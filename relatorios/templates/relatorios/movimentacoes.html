@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
+{% load ui %}
 {% block title %}Movimentações — Relatórios — Empório BR{% endblock %}
 {% block titulo_pagina %}Movimentações{% endblock %}
 
 {% block content %}
-{% include 'relatorios/_abas.html' %}
 <h2>Histórico de movimentações</h2>
 
 <form method="get" role="search" aria-label="Filtrar movimentações">
-  <fieldset>
+  <fieldset class="filtro-periodo">
     <legend>Período</legend>
     {% include 'core/componentes/_campo.html' with campo=filtro.data_inicio %}
     {% include 'core/componentes/_campo.html' with campo=filtro.data_fim %}
@@ -16,8 +16,8 @@
     <label for="{{ filtro.tipo.id_for_label }}">Tipo</label>
     {{ filtro.tipo }}
   </div>
-  <button type="submit" class="botao-secundario">Filtrar</button>
-  <a href="{% url 'relatorios:movimentacoes' %}" class="botao-secundario">Limpar</a>
+  <button type="submit" class="botao-primario">{% icone "search" %} Filtrar</button>
+  <a href="{% url 'relatorios:movimentacoes' %}" class="botao-secundario botao-limpar">{% icone "x-lg" %} Limpar</a>
 </form>
 
 {% if movimentacoes %}

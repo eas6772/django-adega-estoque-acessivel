@@ -64,6 +64,18 @@ class CategoriaViewsTestCase(CatalogoViewsBase):
         self.assertRedirects(resposta, reverse('catalogo:categoria_lista'))
         self.assertTrue(Categoria.objects.filter(nome='Cervejas').exists())
 
+    def test_operador_tambem_cria_categoria_mas_nao_edita(self):
+        Usuario.objects.create_user(nome='caixa', senha='senha123', perfil='operador')
+        self.client.logout()
+        self.client.login(username='caixa', password='senha123')
+        resposta = self.client.get(reverse('catalogo:categoria_lista'))
+        self.assertContains(resposta, 'id="botao-nova-categoria"')
+        self.assertNotContains(resposta, 'acao-editar')
+        self.client.post(reverse('catalogo:categoria_criar'), {'nome': 'Cervejas', 'ativo': 'on'})
+        self.assertTrue(Categoria.objects.filter(nome='Cervejas').exists())
+        url = reverse('catalogo:categoria_editar', args=[self.categoria.pk])
+        self.assertEqual(self.client.post(url, {'nome': 'X', 'ativo': 'on'}).status_code, 403)
+
     def test_criar_categoria_duplicada_reexibe_lista_com_erro(self):
         resposta = self.client.post(reverse('catalogo:categoria_criar'),
                                     {'nome': 'vinhos', 'ativo': 'on'})

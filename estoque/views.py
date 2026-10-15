@@ -9,10 +9,14 @@ from django.views.generic import FormView, ListView, UpdateView
 from catalogo.models import Produto
 from core.permissoes import AdminRequiredMixin
 from core.views import SecaoAtivaMixin
+from relatorios.consultas import com_qtd_compra
 
 from . import servicos
 from .forms import AjusteForm, EntradaForm, FiltroMovimentacaoForm, ValidadeForm
 from .models import Lote, Movimentacao
+
+# Filtros em que a visão geral sugere a quantidade a comprar (mesma regra do relatório de reposição).
+STATUS_COM_REPOSICAO = ('baixo', 'zerado')
 
 
 class VisaoGeralView(SecaoAtivaMixin, ListView):
@@ -30,7 +34,14 @@ class VisaoGeralView(SecaoAtivaMixin, ListView):
             queryset = queryset.abaixo_do_minimo().exclude(estoque_total=0)
         elif status == 'zerado':
             queryset = queryset.filter(estoque_total=0)
+        if status in STATUS_COM_REPOSICAO:
+            queryset = com_qtd_compra(queryset)
         return queryset.order_by('nome')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mostrar_reposicao'] = self.request.GET.get('status') in STATUS_COM_REPOSICAO
+        return context
 
 
 class EntradaView(SecaoAtivaMixin, FormView):

@@ -22,8 +22,8 @@
   <div class="campo campo-checkbox">
     <label for="{{ filtro.mostrar_inativos.id_for_label }}">{{ filtro.mostrar_inativos }} Mostrar inativos</label>
   </div>
-  <button type="submit" class="botao-secundario">{% icone "search" %} Filtrar</button>
-  <a href="{% url 'catalogo:produto_lista' %}" class="botao-secundario" aria-label="Limpar filtros">{% icone "x-lg" %} Limpar</a>
+  <button type="submit" class="botao-primario">{% icone "search" %} Filtrar</button>
+  <a href="{% url 'catalogo:produto_lista' %}" class="botao-secundario botao-limpar" aria-label="Limpar filtros">{% icone "x-lg" %} Limpar</a>
 </form>
 
 {% if produtos %}
@@ -59,8 +59,8 @@
         </td>
         <td class="celula-acoes">
           {% if user.is_admin %}
-          <a href="{% url 'catalogo:produto_editar' produto.pk %}" aria-label="Editar {{ produto.nome }}">{% icone "pencil-fill" %}</a>
-          <button type="button" class="botao-icone"
+          <a href="{% url 'catalogo:produto_editar' produto.pk %}" class="botao-icone acao-editar" aria-label="Editar {{ produto.nome }}">{% icone "pencil-fill" %}</a>
+          <button type="button" class="botao-icone {% if produto.ativo %}acao-desativar{% else %}acao-ativar{% endif %}"
                   data-confirmar-url="{% url 'catalogo:produto_alternar' produto.pk %}"
                   data-confirmar-mensagem="{% if produto.ativo %}Desativar{% else %}Ativar{% endif %} o produto &quot;{{ produto.nome }}&quot;?"
                   data-confirmar-texto="{% if produto.ativo %}Desativar{% else %}Ativar{% endif %}"

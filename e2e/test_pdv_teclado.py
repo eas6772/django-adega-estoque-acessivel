@@ -73,6 +73,42 @@ class VendaSoTecladoTestCase(PdvBase):
         self.lote.refresh_from_db()
         self.assertEqual(self.lote.quantidade, 3)
 
+    def test_finalizar_fica_bloqueado_ate_nova_venda(self):
+        """Depois de registrar a venda, F9 e o botão não criam outra até "Nova venda"."""
+        pagina = self.entrar(self.novo_contexto())
+        self.adicionar_pelo_teclado(pagina)
+        pagina.keyboard.press('Enter')  # lote confirmado pelo teclado (quantidade padrão 1)
+        expect(self.linhas_carrinho(pagina)).to_have_count(1)
+
+        pagina.keyboard.press('F9')
+        expect(pagina.locator('#recibo-titulo')).to_be_focused()
+        expect(pagina.locator('#btn-finalizar')).to_be_disabled()
+
+        pagina.keyboard.press('F9')
+        pagina.locator('#btn-finalizar').evaluate('b => b.click()')  # mesmo com clique forçado
+        self.assertEqual(Venda.objects.count(), 1)
+
+        pagina.locator('#botao-nova-venda').click()
+        expect(pagina.locator('#btn-finalizar')).to_be_enabled()
+        expect(pagina.locator('#finalizar-dica')).to_have_text('Adicione ao menos um produto ao carrinho para finalizar.')
+
+    def test_impressao_mostra_apenas_o_recibo_com_nome_do_estabelecimento(self):
+        pagina = self.entrar(self.novo_contexto())
+        self.adicionar_pelo_teclado(pagina)
+        pagina.keyboard.press('Enter')
+        expect(self.linhas_carrinho(pagina)).to_have_count(1)  # sem isso o F9 pode disparar antes do item entrar
+        pagina.keyboard.press('F9')
+        expect(pagina.locator('#recibo-titulo')).to_be_visible()
+
+        pagina.emulate_media(media='print')
+        expect(pagina.locator('.recibo-impressao')).to_be_visible()
+        expect(pagina.locator('.recibo-cabecalho-impressao')).to_be_visible()
+        expect(pagina.locator('.recibo-estabelecimento')).to_have_text('Empório BR')
+        expect(pagina.locator('#tabela-carrinho')).not_to_be_visible()
+        expect(pagina.locator('#resumo-total')).not_to_be_visible()
+        expect(pagina.locator('#botao-nova-venda')).not_to_be_visible()
+        expect(pagina.locator('.menu-lateral')).not_to_be_visible()
+
     def test_esc_fecha_lista_e_dialogo_devolvendo_o_foco(self):
         pagina = self.entrar(self.novo_contexto())
         pagina.keyboard.press('F2')

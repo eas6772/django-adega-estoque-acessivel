@@ -9,16 +9,23 @@ from django.contrib.auth import password_validation
 from .models import Usuario
 
 
+ROTULO_OPCAO_VAZIA = 'Selecione uma opção'
+
+
 class AcessivelMixin:
     """
     Liga help_text/erros de cada campo ao widget via aria-describedby e marca
     aria-invalid quando o campo tem erro — para os templates da Etapa 3
     poderem só referenciar esses IDs, sem repetir essa lógica em cada form.
+    Também troca o rótulo padrão da opção vazia dos selects ("---------") por
+    "Selecione uma opção".
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for nome, campo in self.fields.items():
+            if isinstance(campo, forms.ModelChoiceField) and campo.empty_label is not None:
+                campo.empty_label = ROTULO_OPCAO_VAZIA
             ids = []
             if campo.help_text:
                 ids.append(f'id_{nome}-dica')

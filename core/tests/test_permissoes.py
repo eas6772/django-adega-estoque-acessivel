@@ -87,7 +87,6 @@ class PerfilOperadorTestCase(TestCase):
                      'catalogo:categoria_alternar']:
             with self.subTest(url=nome):
                 self.assertEqual(self.client.post(reverse(nome, args=[1])).status_code, 403)
-        self.assertEqual(self.client.post(reverse('catalogo:categoria_criar')).status_code, 403)
 
 
 class PerfilAdminTestCase(TestCase):

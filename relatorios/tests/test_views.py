@@ -54,6 +54,29 @@ class RelatoriosViewsTestCase(TestCase):
         conteudo = b''.join(resposta.streaming_content)
         self.assertTrue(conteudo.startswith(b'%PDF'))
 
+    def test_estoque_pdf_inventario_completo(self):
+        self.entrar('operador')
+        resposta = self.client.get(reverse('relatorios:estoque'))
+        self.assertContains(resposta, reverse('relatorios:estoque_pdf'))
+        resposta = self.client.get(reverse('relatorios:estoque_pdf'))
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta['Content-Type'], 'application/pdf')
+        self.assertIn(f'estoque-{timezone.localdate():%Y%m%d}.pdf', resposta['Content-Disposition'])
+        self.assertTrue(b''.join(resposta.streaming_content).startswith(b'%PDF'))
+
+    def test_paginas_de_relatorio_nao_tem_mais_o_menu_superior(self):
+        self.entrar('admin')
+        for nome in ['estoque', 'reposicao', 'mais_vendidos', 'lucro', 'movimentacoes']:
+            with self.subTest(pagina=nome):
+                self.assertNotContains(self.client.get(reverse(f'relatorios:{nome}')), 'abas-relatorio')
+
+    def test_movimentacoes_usa_campos_de_data_com_calendario(self):
+        self.entrar('admin')
+        resposta = self.client.get(reverse('relatorios:movimentacoes'), {'data_inicio': '2026-10-01'})
+        self.assertContains(resposta, 'type="date"', count=2)
+        self.assertContains(resposta, 'value="2026-10-01"')
+        self.assertRegex(resposta.content.decode(), r'<label for="id_data_inicio">\s*De\s*</label>')
+
     def test_mais_vendidos_admin(self):
         self.entrar('admin')
         resposta = self.client.get(reverse('relatorios:mais_vendidos'))

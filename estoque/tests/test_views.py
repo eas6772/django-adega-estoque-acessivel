@@ -48,6 +48,26 @@ class VisaoGeralTestCase(EstoqueBase):
     def test_filtro_zerado(self):
         self.assertEqual(self.nomes(status='zerado'), ['Vinho', 'Zerado'])
 
+    def test_filtro_baixo_mostra_quantidade_sugerida_e_pdf(self):
+        self.baixo.estoque_minimo, self.baixo.estoque_maximo = 5, 20
+        self.baixo.save()
+        resposta = self.client.get(reverse('estoque:visao_geral'), {'status': 'baixo'})
+        self.assertEqual(resposta.context['produtos'][0].qtd_compra, 17)  # 20 - 3
+        self.assertContains(resposta, '<th scope="col">Comprar</th>', html=True)
+        self.assertContains(resposta, reverse('relatorios:reposicao_pdf'))
+
+    def test_quantidade_sugerida_nunca_e_negativa(self):
+        self.zerado.estoque_minimo = self.zerado.estoque_maximo = 0
+        self.zerado.save()
+        resposta = self.client.get(reverse('estoque:visao_geral'), {'status': 'zerado'})
+        compras = {p.nome: p.qtd_compra for p in resposta.context['produtos']}
+        self.assertEqual(compras['Zerado'], 0)
+
+    def test_sem_filtro_nao_mostra_reposicao(self):
+        resposta = self.client.get(reverse('estoque:visao_geral'))
+        self.assertNotContains(resposta, 'Comprar')
+        self.assertNotContains(resposta, reverse('relatorios:reposicao_pdf'))
+
     def test_produto_inativo_nao_aparece(self):
         self.ok.ativo = False
         self.ok.save()

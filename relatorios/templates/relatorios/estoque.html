@@ -4,9 +4,11 @@
 {% block titulo_pagina %}Estoque{% endblock %}
 
 {% block content %}
-{% include 'relatorios/_abas.html' %}
 
-<h2>Valor em estoque</h2>
+<div class="cabecalho-pagina">
+  <h2>Valor em estoque</h2>
+  <a href="{% url 'relatorios:estoque_pdf' %}" class="botao-secundario">{% icone "file-earmark-pdf-fill" %} Exportar inventário (PDF)</a>
+</div>
 <p>Valor total em estoque: <strong>{{ valor_total|brl }}</strong></p>
 
 {% if produtos %}

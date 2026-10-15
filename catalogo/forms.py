@@ -46,7 +46,7 @@ class ProdutoForm(AcessivelMixin, forms.ModelForm):
         return cleaned_data
 
 
-class FiltroProdutoForm(forms.Form):
+class FiltroProdutoForm(AcessivelMixin, forms.Form):
     q = forms.CharField(label='Buscar', required=False)
     categoria = forms.ModelChoiceField(
         label='Categoria', queryset=Categoria.objects.all(), required=False,

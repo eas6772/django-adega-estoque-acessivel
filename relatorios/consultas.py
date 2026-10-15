@@ -32,13 +32,19 @@ def valor_total_estoque(queryset=None):
     return total['total']
 
 
+def com_qtd_compra(queryset):
+    """Anota a quantidade sugerida de compra (máximo − estoque, nunca negativa).
+
+    Espera um queryset já anotado com `estoque_total` (ProdutoQuerySet.com_estoque()).
+    """
+    return queryset.annotate(qtd_compra=Greatest(F('estoque_maximo') - F('estoque_total'), 0))
+
+
 def produtos_para_reposicao():
     """Reaproveita abaixo_do_minimo() — não redefine a regra de "estoque baixo"."""
-    return (
+    return com_qtd_compra(
         Produto.objects.ativos().abaixo_do_minimo().select_related('categoria')
-        .annotate(qtd_compra=Greatest(F('estoque_maximo') - F('estoque_total'), 0))
-        .order_by('nome')
-    )
+    ).order_by('nome')
 
 
 def _filtrar_periodo(queryset, data_inicio, data_fim):
