@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Categorias — Empório BR{% endblock %}
+{% block titulo_pagina %}Categorias{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Categorias</h1>
-  {% if user.is_admin %}
   <button type="button" class="botao-primario" id="botao-nova-categoria">{% icone "folder-plus" %} Nova categoria</button>
-  {% endif %}
 </div>
 
 {% if categorias %}
@@ -35,12 +33,12 @@
         </td>
         <td class="celula-acoes">
           {% if user.is_admin %}
-          <button type="button" class="botao-icone botao-editar-categoria"
+          <button type="button" class="botao-icone acao-editar botao-editar-categoria"
                   data-id="{{ categoria.pk }}" data-nome="{{ categoria.nome }}"
                   data-ativo="{{ categoria.ativo|yesno:'true,false' }}"
                   data-url="{% url 'catalogo:categoria_editar' categoria.pk %}"
                   aria-label="Editar {{ categoria.nome }}">{% icone "pencil-fill" %}</button>
-          <button type="button" class="botao-icone"
+          <button type="button" class="botao-icone {% if categoria.ativo %}acao-desativar{% else %}acao-ativar{% endif %}"
                   data-confirmar-url="{% url 'catalogo:categoria_alternar' categoria.pk %}"
                   data-confirmar-mensagem="{% if categoria.ativo %}Desativar{% else %}Ativar{% endif %} a categoria &quot;{{ categoria.nome }}&quot;?"
                   data-confirmar-texto="{% if categoria.ativo %}Desativar{% else %}Ativar{% endif %}"
@@ -58,7 +56,6 @@
   {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhuma categoria cadastrada." %}
 {% endif %}
 
-{% if user.is_admin %}
 <dialog id="dialogo-categoria" class="dialogo" aria-labelledby="dialogo-categoria-titulo">
   <form method="post" id="form-categoria" action="{% url 'catalogo:categoria_criar' %}">
     {% csrf_token %}
@@ -75,7 +72,6 @@
     </div>
   </form>
 </dialog>
-{% endif %}
 {% endblock %}
 
 {% block scripts %}

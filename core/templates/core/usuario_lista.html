@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Usuários — Empório BR{% endblock %}
+{% block titulo_pagina %}Usuários{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Usuários</h1>
   <a href="{% url 'core:usuario_criar' %}" class="botao-primario">{% icone "person-plus-fill" %} Novo usuário</a>
 </div>
 
@@ -32,9 +32,9 @@
           </span>
         </td>
         <td class="celula-acoes">
-          <a href="{% url 'core:usuario_editar' usuario.pk %}" aria-label="Editar {{ usuario.nome }}">{% icone "pencil-fill" %}</a>
+          <a href="{% url 'core:usuario_editar' usuario.pk %}" class="botao-icone acao-editar" aria-label="Editar {{ usuario.nome }}">{% icone "pencil-fill" %}</a>
           {% if usuario.pk != request.user.pk %}
-          <button type="button" class="botao-icone"
+          <button type="button" class="botao-icone {% if usuario.ativo %}acao-desativar{% else %}acao-ativar{% endif %}"
                   data-confirmar-url="{% url 'core:usuario_alternar' usuario.pk %}"
                   data-confirmar-mensagem="{% if usuario.ativo %}Desativar{% else %}Ativar{% endif %} o usuário &quot;{{ usuario.nome }}&quot;?"
                   data-confirmar-texto="{% if usuario.ativo %}Desativar{% else %}Ativar{% endif %}"

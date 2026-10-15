@@ -10,6 +10,7 @@ ENV/
 *.pyo
 *$py.class
 __pycache__/
+*.egg-info/
 db.sqlite3
 /media/
 /static/

@@ -1,4 +1,10 @@
 {% load ui %}
+<div class="recibo-impressao">
+<header class="recibo-cabecalho-impressao">
+  <p class="recibo-estabelecimento">Empório BR</p>
+  <p>Bebidas, snacks e tabacaria</p>
+</header>
+
 <h2 id="recibo-titulo" tabindex="-1">Recibo da venda #{{ venda.pk }}</h2>
 <dl class="recibo-metadados">
   <dt>Data</dt>
@@ -39,4 +45,5 @@
 <div class="acoes-form recibo-acoes">
   <button type="button" class="botao-secundario" id="botao-imprimir-recibo">{% icone "printer-fill" %} Imprimir</button>
   <button type="button" class="botao-primario" id="botao-nova-venda">{% icone "plus-lg" %} Nova venda</button>
+</div>
 </div>

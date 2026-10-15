@@ -7,6 +7,8 @@ import { focar as focarBusca } from './busca.js';
 
 const botao = document.getElementById('btn-finalizar');
 const textoOriginal = botao.innerHTML;
+const dicaFinalizar = document.getElementById('finalizar-dica');
+const textoDicaOriginal = dicaFinalizar.textContent;
 const painelRecibo = document.getElementById('painel-recibo');
 
 async function buscarFragmentoRecibo(url) {
@@ -14,13 +16,28 @@ async function buscarFragmentoRecibo(url) {
   return resposta.text();
 }
 
+// Enquanto o recibo da última venda estiver na tela, o botão fica desabilitado:
+// só "Nova venda" (ou recarregar a página) libera uma nova finalização.
+function bloquearAteNovaVenda() {
+  botao.disabled = true;
+  dicaFinalizar.textContent = 'Venda registrada. Use “Nova venda” no recibo para iniciar outra.';
+}
+
+function liberarFinalizacao() {
+  botao.disabled = false;
+  dicaFinalizar.textContent = textoDicaOriginal;
+}
+
 async function finalizarVenda() {
+  if (botao.disabled) return;
+
   const itens = carrinho.obterItens();
   if (itens.length === 0) {
     anunciar('Adicione pelo menos um produto ao carrinho.', 'assertive');
     return;
   }
 
+  let vendaRegistrada = false;
   botao.setAttribute('aria-busy', 'true');
   botao.disabled = true;
   botao.textContent = 'Registrando venda…';
@@ -31,6 +48,7 @@ async function finalizarVenda() {
     });
 
     if (status === 201) {
+      vendaRegistrada = true;
       carrinho.limpar();
       // dados já vem renderizado e escapado pelo Django (fragmento HTML de
       // confiança) — diferente dos endpoints JSON, aqui é seguro atribuir
@@ -42,8 +60,10 @@ async function finalizarVenda() {
       painelRecibo.querySelector('#botao-nova-venda')?.addEventListener('click', () => {
         painelRecibo.hidden = true;
         painelRecibo.replaceChildren();
+        liberarFinalizacao();
         focarBusca();
       });
+      bloquearAteNovaVenda();
       const titulo = painelRecibo.querySelector('#recibo-titulo');
       titulo?.focus();
       anunciar(`Venda ${dados.id} registrada. Total R$ ${dados.total.replace('.', ',')}.`);
@@ -64,11 +84,16 @@ async function finalizarVenda() {
       window.location.href = erro.loginUrl || '/login/';
       return;
     }
+    if (vendaRegistrada) {
+      // A venda já foi gravada: não reabre a finalização para não duplicá-la.
+      anunciar('Venda registrada, mas o recibo não pôde ser exibido. Recarregue a página.', 'assertive');
+      return;
+    }
     anunciar('Falha de conexão. O carrinho foi mantido; tente novamente.', 'assertive');
   } finally {
     botao.removeAttribute('aria-busy');
-    botao.disabled = false;
     botao.innerHTML = textoOriginal;
+    if (!vendaRegistrada) botao.disabled = false;
   }
 }
 

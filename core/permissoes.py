@@ -14,7 +14,8 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import resolve_url
-from django.utils.http import urlencode
+from django.utils.http import url_has_allowed_host_and_scheme, urlencode
+from urllib.parse import urlsplit
 
 
 class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -38,6 +39,21 @@ def admin_required(view):
     return _view
 
 
+def _pagina_de_origem(request):
+    """
+    Para onde voltar depois do login: a PÁGINA que fez o fetch (Referer do
+    mesmo host), não a URL da API. Voltar para /vendas/api/vendas/ levaria o
+    caixa a uma rota só-POST (405). Sem Referer válido, cai na URL da requisição.
+    """
+    referer = request.META.get('HTTP_REFERER', '')
+    if referer and url_has_allowed_host_and_scheme(
+        referer, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        partes = urlsplit(referer)
+        return partes.path + (f'?{partes.query}' if partes.query else '')
+    return request.get_full_path()
+
+
 def login_required_json(view):
     """
     Para endpoints JSON (vendas/api.py, estoque/api.py).
@@ -55,7 +71,7 @@ def login_required_json(view):
     def _view(request, *args, **kwargs):
         if not request.user.is_authenticated:
             login_url = resolve_url(settings.LOGIN_URL)
-            proximo = urlencode({'next': request.get_full_path()})
+            proximo = urlencode({'next': _pagina_de_origem(request)})
             return JsonResponse(
                 {'erro': 'Sessão expirada.', 'login_url': f'{login_url}?{proximo}'},
                 status=401,

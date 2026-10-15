@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Alterar validade — Empório BR{% endblock %}
+{% block titulo_pagina %}Alterar validade do lote #{{ object.pk }}{% endblock %}
 
 {% block content %}
-<h1>Alterar validade do lote #{{ object.pk }}</h1>
 <p>{{ object.produto.nome }} — quantidade atual: {{ object.quantidade }}</p>
 
 {% include 'core/componentes/_resumo_erros.html' with form=form %}

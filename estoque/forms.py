@@ -45,8 +45,13 @@ class ValidadeForm(AcessivelMixin, forms.ModelForm):
 
 
 class FiltroMovimentacaoForm(forms.Form):
-    data_inicio = forms.DateField(required=False)
-    data_fim = forms.DateField(required=False)
+    # type="date": digitar a data ou escolher no calendário, igual ao filtro de Lucro.
+    data_inicio = forms.DateField(
+        label='De', required=False, widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+    )
+    data_fim = forms.DateField(
+        label='Até', required=False, widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+    )
     tipo = forms.ChoiceField(
         choices=[('', 'Todos')] + list(Movimentacao.Tipo.choices), required=False,
     )

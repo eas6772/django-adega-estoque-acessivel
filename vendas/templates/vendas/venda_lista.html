@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Vendas — Empório BR{% endblock %}
+{% block titulo_pagina %}Vendas{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Vendas</h1>
   <a href="{% url 'vendas:pdv' %}" class="botao-primario">{% icone "cart-fill" %} Nova venda</a>
 </div>
 

@@ -1,95 +1,120 @@
 {% extends 'base.html' %}
-{% load ui %}
-{% block title %}Painel — Empório BR{% endblock %}
+{% load static ui %}
+{% block title %}Home — Empório BR{% endblock %}
+{% block titulo_pagina %}Home{% endblock %}
 
 {% block content %}
-<h1>Painel</h1>
 
-<dl class="grade-kpi">
-  <div class="cartao kpi">
-    <dt>Vendas hoje</dt>
-    <dd>{{ qtd_vendas_hoje }}</dd>
-  </div>
-  <div class="cartao kpi">
-    <dt>Total vendido hoje</dt>
-    <dd>{{ total_vendas_hoje|brl }}</dd>
-  </div>
-  <div class="cartao kpi">
-    <dt>Produtos abaixo do mínimo</dt>
-    <dd>{{ produtos_abaixo_do_minimo|length }}</dd>
-  </div>
-  <div class="cartao kpi">
-    <dt>Lotes vencendo em 30 dias</dt>
-    <dd>{{ lotes_vencendo|length }}</dd>
-  </div>
-</dl>
+<section aria-labelledby="t-indicadores">
+  <h2 id="t-indicadores" class="visualmente-oculto">Indicadores</h2>
+  <dl class="grade-kpi">
+    <div class="kpi kpi-sucesso">
+      <dt>{% icone "box-seam-fill" %} Produtos ativos</dt>
+      <dd>{{ total_produtos_ativos }}</dd>
+      <dd class="kpi-nota">cadastrados no sistema</dd>
+    </div>
 
-<section class="cartao" aria-labelledby="titulo-estoque-baixo">
-  <h2 id="titulo-estoque-baixo">Produtos abaixo do mínimo</h2>
-  {% if produtos_abaixo_do_minimo %}
-    <div class="tabela-scroll" role="region" aria-labelledby="titulo-estoque-baixo" tabindex="0">
+    <div class="kpi {% if total_estoque_baixo %}kpi-perigo{% else %}kpi-sucesso{% endif %}">
+      <dt>{% icone "exclamation-triangle-fill" %} Estoque baixo</dt>
+      <dd>{{ total_estoque_baixo }}</dd>
+      <dd class="kpi-nota">
+        {% if total_estoque_baixo %}no mínimo ou abaixo dele{% else %}todos os estoques OK{% endif %}
+      </dd>
+    </div>
+
+    <div class="kpi {% if total_vencendo %}kpi-aviso{% else %}kpi-sucesso{% endif %}">
+      <dt>{% icone "clock-fill" %} Vencendo em 30 dias</dt>
+      <dd>{{ total_vencendo }}</dd>
+      <dd class="kpi-nota">lotes com validade próxima</dd>
+    </div>
+
+    {% if user.is_admin %}
+    <div class="kpi kpi-info">
+      <dt>{% icone "cart-fill" %} Vendas hoje</dt>
+      <dd>{{ vendas_hoje.total|brl }}</dd>
+      <dd class="kpi-nota">{{ vendas_hoje.quantidade }} venda{{ vendas_hoje.quantidade|pluralize }}</dd>
+    </div>
+    {% endif %}
+  </dl>
+</section>
+
+<div class="painel-listas">
+  <section class="cartao" aria-labelledby="t-estoque-baixo">
+    <h2 id="t-estoque-baixo">Estoque baixo</h2>
+    {% if produtos_estoque_baixo %}
+    <div class="tabela-scroll" role="region" aria-labelledby="t-estoque-baixo" tabindex="0">
       <table>
-        <caption class="visualmente-oculto">Produtos com estoque igual ou abaixo do mínimo cadastrado</caption>
+        <caption class="visualmente-oculto">Produtos com estoque no mínimo ou abaixo dele</caption>
         <thead>
           <tr>
             <th scope="col">Produto</th>
-            <th scope="col">Categoria</th>
-            <th scope="col">Estoque atual</th>
+            <th scope="col">Estoque</th>
             <th scope="col">Mínimo</th>
-            <th scope="col"><span class="visualmente-oculto">Ações</span></th>
           </tr>
         </thead>
         <tbody>
-          {% for produto in produtos_abaixo_do_minimo %}
+          {% for produto in produtos_estoque_baixo %}
           <tr>
             <th scope="row">{{ produto.nome }}</th>
-            <td>{{ produto.categoria.nome }}</td>
             <td>
-              <span class="status {% if produto.estoque_total == 0 %}status-zerado{% else %}status-baixo{% endif %}">
-                {% icone "exclamation-triangle-fill" %}
-                {{ produto.estoque_total }} {% if produto.estoque_total == 0 %}(zerado){% else %}(baixo){% endif %}
-              </span>
+              {{ produto.estoque_total }}
+              {% if produto.estoque_total == 0 %}<span class="selo selo-perigo">Esgotado</span>{% endif %}
             </td>
             <td>{{ produto.estoque_minimo }}</td>
-            <td><a href="{% url 'estoque:entrada' %}?produto_id={{ produto.pk }}">Registrar entrada</a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-  {% else %}
-    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum produto abaixo do mínimo. Bom trabalho!" %}
-  {% endif %}
-</section>
+    {% if total_estoque_baixo > limite_lista %}
+    <p class="lista-rodape">Mostrando {{ limite_lista }} de {{ total_estoque_baixo }}.
+      <a href="{% url 'estoque:visao_geral' %}">Ver estoque completo</a></p>
+    {% endif %}
+    {% else %}
+    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Todos os produtos estão com estoque adequado." %}
+    {% endif %}
+  </section>
 
-<section class="cartao" aria-labelledby="titulo-vencendo">
-  <h2 id="titulo-vencendo">Lotes vencendo em até 30 dias</h2>
-  {% if lotes_vencendo %}
-    <div class="tabela-scroll" role="region" aria-labelledby="titulo-vencendo" tabindex="0">
+  <section class="cartao" aria-labelledby="t-vencimento">
+    <h2 id="t-vencimento">Próximos ao vencimento</h2>
+    {% if lotes_vencendo %}
+    <div class="tabela-scroll" role="region" aria-labelledby="t-vencimento" tabindex="0">
       <table>
-        <caption class="visualmente-oculto">Lotes com validade nos próximos 30 dias</caption>
+        <caption class="visualmente-oculto">Lotes que vencem nos próximos 30 dias</caption>
         <thead>
           <tr>
             <th scope="col">Produto</th>
-            <th scope="col">Lote</th>
-            <th scope="col">Quantidade</th>
+            <th scope="col">Qtd.</th>
             <th scope="col">Validade</th>
+            <th scope="col">Dias</th>
           </tr>
         </thead>
         <tbody>
           {% for lote in lotes_vencendo %}
           <tr>
             <th scope="row">{{ lote.produto.nome }}</th>
-            <td>{{ lote.numero_lote|default:"—" }}</td>
             <td>{{ lote.quantidade }}</td>
             <td><time datetime="{{ lote.data_validade|date:'Y-m-d' }}">{{ lote.data_validade|date:'d/m/Y' }}</time></td>
+            <td>
+              {% if lote.dias_para_vencer == 0 %}Hoje{% else %}{{ lote.dias_para_vencer }}{% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-  {% else %}
-    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum lote vencendo nos próximos 30 dias." %}
-  {% endif %}
-</section>
+    {% if total_vencendo > limite_lista %}
+    <p class="lista-rodape">Mostrando {{ limite_lista }} de {{ total_vencendo }} lotes.</p>
+    {% endif %}
+    {% else %}
+    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum lote vence nos próximos 30 dias." %}
+    {% endif %}
+  </section>
+</div>
+
+<div class="painel-banner">
+  <img src="{% static 'core/imagens/baner4.jpg' %}"
+       alt="Empório BR — Bebidas, snacks e tabacaria"
+       width="908" height="300">
+</div>
 {% endblock %}

@@ -7,11 +7,13 @@ Produto.preco_custo atual — bug #8 do Flask). Ver docs/projeto_django_spec.md
 """
 from decimal import Decimal
 
-from django.db.models import F, Sum
+from django.db.models import Count, F, Sum
 from django.db.models.functions import Coalesce, Greatest
+from django.utils import timezone
 
 from catalogo.models import Produto
-from vendas.models import ItemVenda
+from estoque.models import Lote
+from vendas.models import ItemVenda, Venda
 
 
 def produtos_com_valor_estoque():
@@ -30,13 +32,19 @@ def valor_total_estoque(queryset=None):
     return total['total']
 
 
+def com_qtd_compra(queryset):
+    """Anota a quantidade sugerida de compra (máximo − estoque, nunca negativa).
+
+    Espera um queryset já anotado com `estoque_total` (ProdutoQuerySet.com_estoque()).
+    """
+    return queryset.annotate(qtd_compra=Greatest(F('estoque_maximo') - F('estoque_total'), 0))
+
+
 def produtos_para_reposicao():
     """Reaproveita abaixo_do_minimo() — não redefine a regra de "estoque baixo"."""
-    return (
+    return com_qtd_compra(
         Produto.objects.ativos().abaixo_do_minimo().select_related('categoria')
-        .annotate(qtd_compra=Greatest(F('estoque_maximo') - F('estoque_total'), 0))
-        .order_by('nome')
-    )
+    ).order_by('nome')
 
 
 def _filtrar_periodo(queryset, data_inicio, data_fim):
@@ -68,3 +76,34 @@ def lucro_por_produto(data_inicio=None, data_fim=None):
         .annotate(lucro=F('receita') - F('custo'))
         .order_by('-lucro')
     )
+
+
+# ---------- Indicadores da página inicial (core:painel) ----------
+
+def produtos_ativos():
+    return Produto.objects.ativos()
+
+
+def produtos_estoque_baixo():
+    """Mesma regra de produtos_para_reposicao(): abaixo_do_minimo() inclui os zerados."""
+    return (
+        Produto.objects.ativos().abaixo_do_minimo().select_related('categoria')
+        .order_by('estoque_total', 'nome')
+    )
+
+
+def lotes_vencendo(dias=30):
+    """Lotes com saldo que vencem em até `dias` dias (hoje inclusive), do mais próximo ao mais distante."""
+    return (
+        Lote.objects.vencendo_em(dias).filter(produto__ativo=True)
+        .select_related('produto').order_by('data_validade', 'id')
+    )
+
+
+def vendas_do_dia(dia=None):
+    """Total e quantidade de vendas do dia local (nunca date.today())."""
+    dia = dia or timezone.localdate()
+    resumo = Venda.objects.filter(data__date=dia).aggregate(
+        total=Coalesce(Sum('total'), Decimal('0.00')), quantidade=Count('id'),
+    )
+    return resumo

@@ -64,7 +64,7 @@ class CategoriaFormMixin(SecaoAtivaMixin):
         return self.render_to_response(context)
 
 
-class CategoriaCreateView(AdminRequiredMixin, CategoriaFormMixin, CreateView):
+class CategoriaCreateView(CategoriaFormMixin, CreateView):
     pass
 
 

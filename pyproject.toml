@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emporio-br"
+version = "0.1.0"
+description = "Gestão de estoque e frente de caixa da adega Empório BR (Django + PostgreSQL, WCAG 2.2 AA)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "Django==6.1.1",
+    "psycopg[binary]==3.3.6",
+    "django-environ==0.14.0",
+    "reportlab==5.0.1",
+]
+
+[project.optional-dependencies]
+# Testes de ponta a ponta e de acessibilidade (pasta e2e/).
+# Depois de instalar: playwright install chromium
+dev = [
+    "playwright==1.64.0",
+    "axe-playwright-python==0.1.8",
+]
+
+[tool.setuptools]
+# É uma aplicação, não uma biblioteca: o `pip install` só precisa resolver as
+# dependências. Sem isto o setuptools tenta descobrir pacotes na raiz
+# (core, catalogo, estoque...) e falha por haver vários de nível superior.
+packages = []

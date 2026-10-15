@@ -1,22 +1,25 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Estoque — Empório BR{% endblock %}
+{% block titulo_pagina %}Visão geral{% endblock %}
 
 {% block content %}
 <div class="cabecalho-pagina">
-  <h1>Estoque</h1>
   <div class="grupo-botoes">
     <a href="{% url 'estoque:entrada' %}" class="botao-primario">{% icone "box-arrow-in-down" %} Registrar entrada</a>
     {% if user.is_admin %}
     <a href="{% url 'estoque:ajuste' %}" class="botao-secundario">{% icone "sliders" %} Ajustar</a>
+    {% endif %}
+    {% if mostrar_reposicao %}
+    <a href="{% url 'relatorios:reposicao_pdf' %}" class="botao-secundario">{% icone "file-earmark-pdf-fill" %} Reposição sugerida (PDF)</a>
     {% endif %}
   </div>
 </div>
 
 <div class="filtro-status" role="group" aria-label="Filtrar por situação">
   <a href="{% url 'estoque:visao_geral' %}" {% if not request.GET.status %}aria-current="true"{% endif %}>Todos</a>
-  <a href="?status=baixo" {% if request.GET.status == 'baixo' %}aria-current="true"{% endif %}>Estoque baixo</a>
-  <a href="?status=zerado" {% if request.GET.status == 'zerado' %}aria-current="true"{% endif %}>Zerado</a>
+  <a href="?status=baixo" class="filtro-baixo" {% if request.GET.status == 'baixo' %}aria-current="true"{% endif %}>Estoque baixo</a>
+  <a href="?status=zerado" class="filtro-zerado" {% if request.GET.status == 'zerado' %}aria-current="true"{% endif %}>Zerado</a>
 </div>
 
 {% if produtos %}
@@ -30,6 +33,7 @@
         <th scope="col">Estoque</th>
         <th scope="col">Mínimo</th>
         <th scope="col">Máximo</th>
+        {% if mostrar_reposicao %}<th scope="col">Comprar</th>{% endif %}
         <th scope="col"><span class="visualmente-oculto">Ações</span></th>
       </tr>
     </thead>
@@ -46,6 +50,7 @@
         </td>
         <td>{{ produto.estoque_minimo }}</td>
         <td>{{ produto.estoque_maximo }}</td>
+        {% if mostrar_reposicao %}<td><strong>{{ produto.qtd_compra }}</strong></td>{% endif %}
         <td class="celula-acoes">
           <a href="{% url 'estoque:entrada' %}?produto_id={{ produto.pk }}" aria-label="Registrar entrada de {{ produto.nome }}">{% icone "box-arrow-in-down" %}</a>
         </td>

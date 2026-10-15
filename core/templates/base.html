@@ -14,9 +14,12 @@
 
   <div class="layout">
     <nav id="menu-lateral" class="menu-lateral" aria-label="Menu principal">
+      <ul class="menu-raiz">
+        <li><a href="{% url 'core:painel' %}" {% if request.resolver_match.view_name == 'core:painel' %}aria-current="page"{% endif %}>{% icone "house-fill" %}<span>Home</span></a></li>
+      </ul>
+
       <h2 id="grupo-operacoes">Operações</h2>
       <ul aria-labelledby="grupo-operacoes">
-        <li><a href="{% url 'core:painel' %}" {% if request.resolver_match.view_name == 'core:painel' %}aria-current="page"{% endif %}>{% icone "speedometer2" %}<span>Painel</span></a></li>
         <li><a href="{% url 'vendas:pdv' %}" {% if request.resolver_match.view_name == 'vendas:pdv' %}aria-current="page"{% endif %}>{% icone "cart-fill" %}<span>Frente de caixa</span></a></li>
         <li><a href="{% url 'vendas:venda_lista' %}" {% if request.resolver_match.view_name == 'vendas:venda_lista' %}aria-current="page"{% endif %}>{% icone "receipt" %}<span>Vendas</span></a></li>
       </ul>
@@ -57,10 +60,11 @@
         <button type="button" id="menu-toggle" class="botao-icone menu-toggle" aria-controls="menu-lateral" aria-expanded="false" aria-label="Abrir menu">
           {% icone "list" %}
         </button>
+        <h1 class="topbar-titulo">{% block titulo_pagina %}Empório BR{% endblock %}</h1>
         <p class="visualmente-oculto"><strong>Empório BR</strong> — gestão de estoque</p>
         {% if user.is_authenticated %}
         <div class="topbar-usuario">
-          <span>{{ user.nome }} · {{ user.get_perfil_display }}</span>
+          <p class="usuario-ativo">{% icone "person-circle" %}<strong>{{ user.nome }}</strong><span class="usuario-perfil">{{ user.get_perfil_display }}</span></p>
           <form method="post" action="{% url 'core:logout' %}">
             {% csrf_token %}
             <button type="submit" class="botao-icone" aria-label="Sair do sistema">{% icone "box-arrow-right" %}</button>
@@ -83,7 +87,7 @@
       </div>
       {% endif %}
 
-      <main id="conteudo" tabindex="-1">
+      <main id="conteudo" tabindex="-1" class="{% block main_classe %}{% endblock %}">
         {% block content %}{% endblock %}
       </main>
     </div>

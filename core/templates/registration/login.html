@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% load ui %}
 {% block title %}Entrar — Empório BR{% endblock %}
+{% block titulo_pagina %}Entrar{% endblock %}
 
 {% block content %}
 <div class="cartao cartao-login">
   <p class="marca">Empório BR</p>
-  <h1>Entrar no Empório BR</h1>
+  <h2 class="cartao-login-titulo">Entrar no Empório BR</h2>
 
   {% if form.non_field_errors %}
     <div class="resumo-erros" role="alert" tabindex="-1" id="resumo-erros">

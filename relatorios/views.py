@@ -40,6 +40,11 @@ class EstoqueRelView(SecaoAtivaMixin, ListView):
         return context
 
 
+def estoque_pdf(request):
+    nome_arquivo = f'estoque-{timezone.localdate():%Y%m%d}.pdf'
+    return FileResponse(pdf.gerar_pdf_estoque(), as_attachment=True, filename=nome_arquivo)
+
+
 class ReposicaoRelView(SecaoAtivaMixin, ListView):
     template_name = 'relatorios/reposicao.html'
     context_object_name = 'produtos'
