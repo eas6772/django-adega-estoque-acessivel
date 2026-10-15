@@ -1,14 +1,120 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Painel — Empório BR{% endblock %}
-{% block main_classe %}conteudo-painel{% endblock %}
+{% load static ui %}
+{% block title %}Home — Empório BR{% endblock %}
+{% block titulo_pagina %}Home{% endblock %}
 
 {% block content %}
-<h1 class="visualmente-oculto">Painel</h1>
 
-<div class="painel-boas-vindas">
-  <img src="{% static 'core/imagens/Emporio_new4.jpg' %}"
-       alt="Empório BR — adega e loja de vinhos"
-       class="painel-imagem-destaque">
+<section aria-labelledby="t-indicadores">
+  <h2 id="t-indicadores" class="visualmente-oculto">Indicadores</h2>
+  <dl class="grade-kpi">
+    <div class="kpi kpi-sucesso">
+      <dt>{% icone "box-seam-fill" %} Produtos ativos</dt>
+      <dd>{{ total_produtos_ativos }}</dd>
+      <dd class="kpi-nota">cadastrados no sistema</dd>
+    </div>
+
+    <div class="kpi {% if total_estoque_baixo %}kpi-perigo{% else %}kpi-sucesso{% endif %}">
+      <dt>{% icone "exclamation-triangle-fill" %} Estoque baixo</dt>
+      <dd>{{ total_estoque_baixo }}</dd>
+      <dd class="kpi-nota">
+        {% if total_estoque_baixo %}no mínimo ou abaixo dele{% else %}todos os estoques OK{% endif %}
+      </dd>
+    </div>
+
+    <div class="kpi {% if total_vencendo %}kpi-aviso{% else %}kpi-sucesso{% endif %}">
+      <dt>{% icone "clock-fill" %} Vencendo em 30 dias</dt>
+      <dd>{{ total_vencendo }}</dd>
+      <dd class="kpi-nota">lotes com validade próxima</dd>
+    </div>
+
+    {% if user.is_admin %}
+    <div class="kpi kpi-info">
+      <dt>{% icone "cart-fill" %} Vendas hoje</dt>
+      <dd>{{ vendas_hoje.total|brl }}</dd>
+      <dd class="kpi-nota">{{ vendas_hoje.quantidade }} venda{{ vendas_hoje.quantidade|pluralize }}</dd>
+    </div>
+    {% endif %}
+  </dl>
+</section>
+
+<div class="painel-listas">
+  <section class="cartao" aria-labelledby="t-estoque-baixo">
+    <h2 id="t-estoque-baixo">Estoque baixo</h2>
+    {% if produtos_estoque_baixo %}
+    <div class="tabela-scroll" role="region" aria-labelledby="t-estoque-baixo" tabindex="0">
+      <table>
+        <caption class="visualmente-oculto">Produtos com estoque no mínimo ou abaixo dele</caption>
+        <thead>
+          <tr>
+            <th scope="col">Produto</th>
+            <th scope="col">Estoque</th>
+            <th scope="col">Mínimo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for produto in produtos_estoque_baixo %}
+          <tr>
+            <th scope="row">{{ produto.nome }}</th>
+            <td>
+              {{ produto.estoque_total }}
+              {% if produto.estoque_total == 0 %}<span class="selo selo-perigo">Esgotado</span>{% endif %}
+            </td>
+            <td>{{ produto.estoque_minimo }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if total_estoque_baixo > limite_lista %}
+    <p class="lista-rodape">Mostrando {{ limite_lista }} de {{ total_estoque_baixo }}.
+      <a href="{% url 'estoque:visao_geral' %}">Ver estoque completo</a></p>
+    {% endif %}
+    {% else %}
+    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Todos os produtos estão com estoque adequado." %}
+    {% endif %}
+  </section>
+
+  <section class="cartao" aria-labelledby="t-vencimento">
+    <h2 id="t-vencimento">Próximos ao vencimento</h2>
+    {% if lotes_vencendo %}
+    <div class="tabela-scroll" role="region" aria-labelledby="t-vencimento" tabindex="0">
+      <table>
+        <caption class="visualmente-oculto">Lotes que vencem nos próximos 30 dias</caption>
+        <thead>
+          <tr>
+            <th scope="col">Produto</th>
+            <th scope="col">Qtd.</th>
+            <th scope="col">Validade</th>
+            <th scope="col">Dias</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lote in lotes_vencendo %}
+          <tr>
+            <th scope="row">{{ lote.produto.nome }}</th>
+            <td>{{ lote.quantidade }}</td>
+            <td><time datetime="{{ lote.data_validade|date:'Y-m-d' }}">{{ lote.data_validade|date:'d/m/Y' }}</time></td>
+            <td>
+              {% if lote.dias_para_vencer == 0 %}Hoje{% else %}{{ lote.dias_para_vencer }}{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if total_vencendo > limite_lista %}
+    <p class="lista-rodape">Mostrando {{ limite_lista }} de {{ total_vencendo }} lotes.</p>
+    {% endif %}
+    {% else %}
+    {% include 'core/componentes/_tabela_vazia.html' with mensagem="Nenhum lote vence nos próximos 30 dias." %}
+    {% endif %}
+  </section>
+</div>
+
+<div class="painel-banner">
+  <img src="{% static 'core/imagens/banner_emporioBR.jpg' %}"
+       alt="Empório BR — Bebidas, snacks e tabacaria"
+       width="1059" height="350">
 </div>
 {% endblock %}

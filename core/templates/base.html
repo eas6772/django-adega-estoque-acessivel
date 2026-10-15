@@ -14,9 +14,12 @@
 
   <div class="layout">
     <nav id="menu-lateral" class="menu-lateral" aria-label="Menu principal">
+      <ul class="menu-raiz">
+        <li><a href="{% url 'core:painel' %}" {% if request.resolver_match.view_name == 'core:painel' %}aria-current="page"{% endif %}>{% icone "house-fill" %}<span>Home</span></a></li>
+      </ul>
+
       <h2 id="grupo-operacoes">Operações</h2>
       <ul aria-labelledby="grupo-operacoes">
-        <li><a href="{% url 'core:painel' %}" {% if request.resolver_match.view_name == 'core:painel' %}aria-current="page"{% endif %}>{% icone "speedometer2" %}<span>Painel</span></a></li>
         <li><a href="{% url 'vendas:pdv' %}" {% if request.resolver_match.view_name == 'vendas:pdv' %}aria-current="page"{% endif %}>{% icone "cart-fill" %}<span>Frente de caixa</span></a></li>
         <li><a href="{% url 'vendas:venda_lista' %}" {% if request.resolver_match.view_name == 'vendas:venda_lista' %}aria-current="page"{% endif %}>{% icone "receipt" %}<span>Vendas</span></a></li>
       </ul>

@@ -4,9 +4,12 @@ docs/projeto_django_spec.md §3.1.
 """
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+
+from relatorios import consultas
 
 from .forms import UsuarioCriarForm, UsuarioEditarForm
 from .models import Usuario
@@ -26,8 +29,37 @@ class SecaoAtivaMixin:
 
 
 class PainelView(SecaoAtivaMixin, TemplateView):
+    """Página inicial (Home): 4 indicadores e duas listas curtas.
+
+    "Vendas hoje" só é calculada e enviada ao template para admin — a
+    ocultação não é só visual (operador nem recebe o valor).
+    """
+
     template_name = 'core/painel.html'
     secao_ativa = 'painel'
+    LIMITE_LISTA = 8
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hoje = timezone.localdate()
+
+        baixo = consultas.produtos_estoque_baixo()
+        vencendo = list(consultas.lotes_vencendo(30))
+        for lote in vencendo:
+            lote.dias_para_vencer = (lote.data_validade - hoje).days
+
+        context.update(
+            hoje=hoje,
+            total_produtos_ativos=consultas.produtos_ativos().count(),
+            total_estoque_baixo=baixo.count(),
+            produtos_estoque_baixo=list(baixo[:self.LIMITE_LISTA]),
+            total_vencendo=len(vencendo),
+            lotes_vencendo=vencendo[:self.LIMITE_LISTA],
+            limite_lista=self.LIMITE_LISTA,
+        )
+        if self.request.user.is_admin:
+            context['vendas_hoje'] = consultas.vendas_do_dia(hoje)
+        return context
 
 
 class UsuarioListView(AdminRequiredMixin, SecaoAtivaMixin, ListView):
