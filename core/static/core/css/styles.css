@@ -630,18 +630,33 @@ tbody tr:hover {
   color: var(--danger);
 }
 
+/* Em telas grandes a altura é fixa (300 px) e a largura acompanha o espaço disponível.
+   object-fit: contain mantém a imagem inteira; a faixa sobrando nas laterais usa o fundo escuro da própria arte. */
 .painel-banner {
   margin-top: 4px;
+  height: 380px;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--borda);
+  background-color: #05090d;
 }
 
-/* Imagem inteira, na proporção original: sem max-height nem object-fit: cover (cortariam). */
 .painel-banner img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Em telas pequenas a altura volta a acompanhar a proporção da imagem, para não ficar espremida. */
+@media (max-width: 768px) {
+  .painel-banner {
+    height: auto;
+  }
+
+  .painel-banner img {
+    height: auto;
+  }
 }
 
 /* ---------- Mensagens (django.contrib.messages) ---------- */
