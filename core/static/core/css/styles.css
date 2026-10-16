@@ -2,24 +2,30 @@
    componente abaixo usa uma cor "crua", só os tokens já corrigidos para
    contraste AA (docs/melhorias_acessibilidade.md §2.1). */
 
+/* Paleta inspirada no design system Soma (Designe/soma-yoga-studio.aura.build):
+   fundos escuros quentes, texto creme, cobre como destaque e sálvia para "OK".
+   Contrastes conferidos sobre #0F0F0E / #1A1917 / #22211E (todos ≥ 4,5:1 em texto). */
 :root {
-  --bg-base: #0b1120;
-  --bg-card: #1a2236;
-  --bg-elevado: #232c45;
-  --borda: #2f3b57;
+  --bg-base: #0F0F0E;
+  --bg-card: #1A1917;
+  --bg-elevado: #22211E;
+  --borda: #3A342D;          /* separadores decorativos */
+  --borda-campo: #7A776A;    /* contorno de campos e controles: ≥ 3:1 (WCAG 1.4.11) */
 
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #8a98ad;
+  --text-primary: #F5F0EB;
+  --text-secondary: #9C9789;
+  --text-muted: #9C9789;
 
-  --accent: #22c55e;
-  --accent-texto: #0b1120;
-  --danger: #f87171;
-  --danger-bg: #3f1d1d;
-  --warning: #f59e0b;
-  --info: #60a5fa;
+  --accent: #C17F59;         /* cobre */
+  --accent-claro: #D4A07A;   /* cobre claro: para texto/ícone de destaque */
+  --accent-texto: #0F0F0E;
+  --sucesso: #A3B394;        /* sálvia */
+  --danger: #E07A6A;
+  --danger-bg: #3A1F1A;
+  --warning: #D9A441;
+  --info: #8FB3C9;
 
-  --focus-ring: #fbbf24;
+  --focus-ring: #F2C46D;
   --radius-sm: 6px;
   --radius-md: 10px;
 }
@@ -30,6 +36,12 @@
 
 html {
   color-scheme: dark;
+  scrollbar-color: #2C2B27 var(--bg-base);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--text-primary);
 }
 
 body {
@@ -45,7 +57,7 @@ h1, h2, h3 {
 }
 
 a {
-  color: var(--info);
+  color: var(--accent-claro);
 }
 
 /* ---------- Foco visível (A14) — nunca outline: none em nenhum seletor ---------- */
@@ -107,7 +119,7 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700;
-  color: var(--info);
+  color: var(--accent-claro);
   margin: 20px 8px 8px;
 }
 
@@ -134,15 +146,15 @@ a {
 
 .menu-lateral a[aria-current="page"] {
   background: var(--bg-elevado);
-  color: var(--accent);
+  color: var(--accent-claro);
   font-weight: 600;
 }
 
-/* Home em destaque (fora dos grupos): sempre com fundo e contorno verdes; na página atual, preenchido. */
+/* Home em destaque (fora dos grupos): sempre com contorno cobre; na página atual, preenchido. */
 .menu-raiz a {
   background: var(--bg-elevado);
   border: 1px solid var(--accent);
-  color: var(--accent);
+  color: var(--accent-claro);
   font-weight: 700;
 }
 
@@ -153,7 +165,7 @@ a {
 
 .menu-raiz a:hover {
   background: var(--bg-card);
-  color: var(--accent);
+  color: var(--accent-claro);
 }
 
 .menu-raiz a[aria-current="page"]:hover {
@@ -199,7 +211,7 @@ a {
   color: var(--text-secondary);
 }
 
-/* Usuário logado em destaque: cartão com borda verde, nome em negrito e perfil em selo. */
+/* Usuário logado em destaque: cartão com borda cobre, nome em negrito e perfil em selo. */
 .usuario-ativo {
   display: inline-flex;
   align-items: center;
@@ -213,7 +225,7 @@ a {
 }
 
 .usuario-ativo i {
-  color: var(--accent);
+  color: var(--accent-claro);
   font-size: 1.15rem;
 }
 
@@ -282,13 +294,13 @@ button {
 
 .botao-secundario {
   background: transparent;
-  border-color: var(--borda);
+  border-color: var(--borda-campo);
   color: var(--text-primary);
 }
 
 .botao-perigo {
   background: var(--danger);
-  color: #1a0a0a;
+  color: var(--accent-texto);
   font-weight: 600;
 }
 
@@ -304,7 +316,7 @@ button {
 
 .botao-icone {
   background: transparent;
-  border-color: var(--borda);
+  border-color: var(--borda-campo);
   padding: 8px;
 }
 
@@ -351,7 +363,7 @@ button {
 .campo select,
 .campo textarea {
   background: var(--bg-elevado);
-  border: 1px solid var(--borda);
+  border: 1px solid var(--borda-campo);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   padding: 10px 12px;
@@ -609,7 +621,7 @@ tbody tr:hover {
 .filtro-status a {
   padding: 8px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--borda);
+  border: 1px solid var(--borda-campo);
   color: var(--text-secondary);
   text-decoration: none;
 }
@@ -681,8 +693,8 @@ tbody tr:hover {
 }
 
 .celula-acoes .acao-ativar {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--sucesso);
+  border-color: var(--sucesso);
 }
 
 .celula-acoes .acao-editar:hover,
@@ -747,7 +759,7 @@ tbody tr:hover {
 }
 
 /* A cor reforça, mas nunca é o único sinal (WCAG 1.4.1): cada KPI tem rótulo e nota em texto. */
-.kpi-sucesso { border-bottom-color: var(--accent); }
+.kpi-sucesso { border-bottom-color: var(--sucesso); }
 .kpi-aviso { border-bottom-color: var(--warning); }
 .kpi-perigo { border-bottom-color: var(--danger); }
 .kpi-info { border-bottom-color: var(--info); }
@@ -808,7 +820,7 @@ tbody tr:hover {
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--borda);
-  background-color: #05090d;
+  background-color: var(--bg-base);
 }
 
 .painel-banner img {
@@ -844,7 +856,7 @@ tbody tr:hover {
   border: 1px solid var(--borda);
 }
 
-.mensagem-success { border-color: var(--accent); }
+.mensagem-success { border-color: var(--sucesso); }
 .mensagem-info { border-color: var(--info); }
 .mensagem-danger { border-color: var(--danger); }
 .mensagem-warning { border-color: var(--warning); }
@@ -872,7 +884,7 @@ dialog.dialogo {
 }
 
 dialog.dialogo::backdrop {
-  background: rgb(0 0 0 / 0.6);
+  background: rgb(15 15 14 / 0.75);
 }
 
 .dialogo-cabecalho {
@@ -899,7 +911,7 @@ dialog.dialogo::backdrop {
   font-weight: 600;
 }
 
-.status-ok { color: var(--accent); }
+.status-ok { color: var(--sucesso); }
 .status-baixo { color: var(--warning); }
 .status-zerado { color: var(--danger); }
 
@@ -951,7 +963,7 @@ dialog.dialogo::backdrop {
 .busca-wrapper input {
   width: 100%;
   background: var(--bg-elevado);
-  border: 1px solid var(--borda);
+  border: 1px solid var(--borda-campo);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   padding: 10px 12px;
