@@ -1,0 +1,3 @@
+Playfair Display (Claus Eggers Sørensen) e Manrope (Mikhail Sharanda):
+fontes distribuídas sob a SIL Open Font License 1.1 (https://openfontlicense.org).
+Subconjunto latin obtido do Google Fonts; uso, cópia e redistribuição permitidos.
