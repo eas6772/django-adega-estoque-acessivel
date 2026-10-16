@@ -31,6 +31,7 @@ db.sqlite3
 *.swp
 docs/
 novo_app/
+Designe/
 
 # Arquivos do Sistema Operacional
 .DS_Store
