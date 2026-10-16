@@ -43,6 +43,10 @@ class NavegadorTestCase(StaticLiveServerTestCase):
     def novo_contexto(self, **opcoes):
         opcoes.setdefault('locale', 'pt-BR')
         opcoes.setdefault('base_url', self.live_server_url)
+        # Sem isto o axe pode medir o contraste no meio do fade de entrada da Home/Login
+        # (opacidade parcial) e acusar falso positivo. Com movimento reduzido a página
+        # aparece já no estado final, que é o que importa para o contraste.
+        opcoes.setdefault('reduced_motion', 'reduce')
         contexto = self._browser.new_context(**opcoes)
         # O CSS de ícones vem de um CDN. Os ícones são aria-hidden, então
         # bloquear a rede externa deixa o teste rápido e determinístico.
