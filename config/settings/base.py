@@ -103,3 +103,4 @@ SESSION_COOKIE_AGE = 60 * 60 * 10  # um turno de caixa
 
 # Arquivos estáticos — cada app expõe os seus em <app>/static/<app>/ (AppDirectoriesFinder)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # destino do collectstatic (usado em produção)

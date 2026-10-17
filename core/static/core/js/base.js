@@ -78,7 +78,36 @@ function configurarDialogoConfirmar() {
   });
 }
 
+// Brilho cobre que acompanha o mouse em cartões e KPIs (só decorativo; --x/--y alimentam o CSS).
+function configurarBrilho() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const SELETOR = '.cartao, .kpi';
+  let quadro = 0;
+
+  document.addEventListener('pointermove', (evento) => {
+    if (quadro || !(evento.target instanceof Element)) return;
+    const alvo = evento.target.closest(SELETOR);
+    if (!alvo) return;
+    quadro = window.requestAnimationFrame(() => {
+      quadro = 0;
+      const caixa = alvo.getBoundingClientRect();
+      alvo.style.setProperty('--x', `${evento.clientX - caixa.left}px`);
+      alvo.style.setProperty('--y', `${evento.clientY - caixa.top}px`);
+    });
+  });
+
+  document.addEventListener('pointerout', (evento) => {
+    if (!(evento.target instanceof Element)) return;
+    const alvo = evento.target.closest(SELETOR);
+    if (alvo && !alvo.contains(evento.relatedTarget)) {
+      alvo.style.removeProperty('--x');
+      alvo.style.removeProperty('--y');
+    }
+  });
+}
+
 configurarMenu();
 configurarMensagens();
 focarResumoErros();
 configurarDialogoConfirmar();
+configurarBrilho();
