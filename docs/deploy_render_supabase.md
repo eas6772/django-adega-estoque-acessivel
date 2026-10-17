@@ -27,7 +27,7 @@ Tudo que o Render precisa está versionado: `render.yaml` (blueprint), `build.sh
    Veja-os em **Environment** do serviço.
 4. Aguarde o build. Ele instala as dependências, junta os estáticos, aplica as migrações e
    carrega os dados de demonstração (`SEED_DEMO=true`).
-5. Acesse `https://emporio-br.onrender.com` (o nome pode variar). Entre com `admin` e a senha
+5. Acesse `https://emporio-br-django.onrender.com` (o nome pode variar). Entre com `admin` e a senha
    de `DEMO_ADMIN_SENHA`; o usuário `caixa` usa `DEMO_CAIXA_SENHA`.
 
 `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` já incluem o domínio `*.onrender.com`
