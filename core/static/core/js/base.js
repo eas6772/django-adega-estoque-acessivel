@@ -2,6 +2,7 @@
 // de mensagens de sucesso/info, foco no resumo de erros, e o diálogo de
 // confirmação genérico usado pelos botões "alternar ativo" de todo o site.
 import { abrir, aoFechar } from '/static/core/js/dialogo.js';
+import '/static/core/js/dicas.js';
 
 function configurarMenu() {
   const toggle = document.getElementById('menu-toggle');
