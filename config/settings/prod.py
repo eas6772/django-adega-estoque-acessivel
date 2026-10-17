@@ -4,7 +4,7 @@ from .base import DATABASES, MIDDLEWARE, env
 DEBUG = False
 
 # Hosts: ALLOWED_HOSTS (lista separada por vírgula) + o domínio que o Render injeta sozinho
-# em RENDER_EXTERNAL_HOSTNAME (ex.: emporio-br.onrender.com).
+# em RENDER_EXTERNAL_HOSTNAME (ex.: emporio-br-django.onrender.com).
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 _host_render = env('RENDER_EXTERNAL_HOSTNAME', default='')

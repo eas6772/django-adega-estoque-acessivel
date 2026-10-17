@@ -2,7 +2,7 @@
 # (Session pooler, porta 5432) é colada no painel do Render, nunca versionada.
 services:
   - type: web
-    name: emporio-br
+    name: emporio-br-django   # "emporio-br" já é o serviço antigo (Flask) na conta do Render
     runtime: python
     plan: free
     region: virginia   # mais próximo do Supabase em São Paulo (o Render não tem região no Brasil)
