@@ -1549,6 +1549,39 @@ main:has(.cartao-login) {
   }
 }
 
+/* ---------- Dicas de botões só de ícone (core/js/dicas.js) ---------- */
+.dica {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  max-width: min(280px, calc(100vw - 16px));
+  padding: 6px 10px;
+  border: 1px solid var(--borda-campo);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevado);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.3;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 0.15s var(--ease-suave);
+  z-index: 1000;
+}
+
+.dica.visivel {
+  opacity: 1;
+}
+
+.dica:not(.visivel):not(:popover-open) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dica {
+    transition: none;
+  }
+}
+
 /* ---------- Impressão (recibo) ---------- */
 /* Cabeçalho com o nome do estabelecimento só aparece na impressão. */
 .recibo-cabecalho-impressao {
