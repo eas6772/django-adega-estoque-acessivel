@@ -1,0 +1,26 @@
+# Blueprint do Render: só o serviço web. O PostgreSQL fica no Supabase; a DATABASE_URL
+# (Session pooler, porta 5432) é colada no painel do Render, nunca versionada.
+services:
+  - type: web
+    name: emporio-br
+    runtime: python
+    plan: free
+    region: virginia   # mais próximo do Supabase em São Paulo (o Render não tem região no Brasil)
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --workers 2 --timeout 60
+    healthCheckPath: /login/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false          # preencher no painel
+      - key: SEED_DEMO
+        value: "true"
+      - key: DEMO_ADMIN_SENHA
+        generateValue: true  # a senha gerada aparece em Environment, no painel
+      - key: DEMO_CAIXA_SENHA
+        generateValue: true

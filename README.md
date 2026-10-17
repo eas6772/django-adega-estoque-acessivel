@@ -25,6 +25,12 @@ O ecossistema do projeto foi construído utilizando tecnologias robustas e de me
 
 ---
 
+## ☁️ Deploy
+
+App no Render e banco no Supabase: veja [docs/deploy_render_supabase.md](docs/deploy_render_supabase.md).
+
+---
+
 ## 🔧 Como Executar o Projeto Localmente
 
 ### Pré-requisitos
