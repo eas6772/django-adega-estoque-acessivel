@@ -19,7 +19,9 @@ Tudo que o Render precisa está versionado: `render.yaml` (blueprint), `build.sh
 
 ## 2. Render (aplicação)
 
-1. No painel: **New → Blueprint** e escolha este repositório (branch `develop`).
+1. No painel: **New → Blueprint** e escolha este repositório, na branch **`main`**. O Render
+   passa a publicar a cada push nela; a `develop` fica livre para o trabalho do dia a dia.
+   Antes de publicar uma mudança, faça o merge da `develop` na `main`.
 2. O Render lê o `render.yaml`. Preencha o único segredo pedido: **DATABASE_URL** (item 1.3).
 3. `SECRET_KEY`, `DEMO_ADMIN_SENHA` e `DEMO_CAIXA_SENHA` são gerados pelo próprio Render.
    Veja-os em **Environment** do serviço.
