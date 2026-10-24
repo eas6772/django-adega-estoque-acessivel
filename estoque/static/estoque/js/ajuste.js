@@ -7,7 +7,9 @@ const form = document.getElementById('form-ajuste');
 const campoProduto = document.getElementById('id_produto');
 const campoLote = document.getElementById('id_lote');
 const infoLote = document.getElementById('lote-info');
-const urlBase = form.dataset.urlLotes.replace('0', '');
+// A URL do template traz o id 0 como marcador (…/produtos/0/lotes/); troca só o
+// segmento numérico pelo id real do produto.
+const urlLotes = (produtoId) => form.dataset.urlLotes.replace(/\/0\//, `/${produtoId}/`);
 
 function limparSelect(mensagem) {
   campoLote.replaceChildren();
@@ -25,7 +27,7 @@ async function carregarLotes(produtoId) {
   }
   campoLote.setAttribute('aria-busy', 'true');
   limparSelect('Carregando lotes…');
-  const { status, dados } = await getJSON(`${urlBase}${produtoId}/lotes/`);
+  const { status, dados } = await getJSON(urlLotes(produtoId));
   campoLote.removeAttribute('aria-busy');
   if (status !== 200 || !dados || dados.length === 0) {
     limparSelect('Nenhum lote disponível para este produto');
