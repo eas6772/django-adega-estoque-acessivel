@@ -9,6 +9,7 @@ services:
     buildCommand: ./build.sh
     startCommand: gunicorn config.wsgi:application --workers 2 --timeout 60
     healthCheckPath: /login/
+    autoDeployTrigger: commit   # cada push na branch do serviço (main) dispara um deploy
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.5
