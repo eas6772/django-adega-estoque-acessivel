@@ -24,7 +24,7 @@
       <h2 id="grupo-operacoes">Operações</h2>
       <ul aria-labelledby="grupo-operacoes">
         <li><a href="{% url 'vendas:pdv' %}" {% if request.resolver_match.view_name == 'vendas:pdv' %}aria-current="page"{% endif %}>{% icone "cart-fill" %}<span>Frente de caixa</span></a></li>
-        <li><a href="{% url 'vendas:venda_lista' %}" {% if request.resolver_match.view_name == 'vendas:venda_lista' %}aria-current="page"{% endif %}>{% icone "receipt" %}<span>Vendas</span></a></li>
+        <li><a href="{% url 'vendas:venda_lista' %}" {% if request.resolver_match.view_name == 'vendas:venda_lista' %}aria-current="page"{% endif %}>{% icone "receipt" %}<span>Resumo de Vendas</span></a></li>
       </ul>
 
       <h2 id="grupo-catalogo">Catálogo</h2>
@@ -44,11 +44,17 @@
         <li><a href="{% url 'relatorios:estoque' %}" {% if request.resolver_match.view_name == 'relatorios:estoque' %}aria-current="page"{% endif %}>{% icone "bar-chart-fill" %}<span>Estoque</span></a></li>
         <li><a href="{% url 'relatorios:reposicao' %}" {% if request.resolver_match.view_name == 'relatorios:reposicao' %}aria-current="page"{% endif %}>{% icone "arrow-repeat" %}<span>Reposição</span></a></li>
         {% if user.is_admin %}
-        <li><a href="{% url 'relatorios:mais_vendidos' %}" {% if request.resolver_match.view_name == 'relatorios:mais_vendidos' %}aria-current="page"{% endif %}>{% icone "trophy-fill" %}<span>Mais vendidos</span></a></li>
-        <li><a href="{% url 'relatorios:lucro' %}" {% if request.resolver_match.view_name == 'relatorios:lucro' %}aria-current="page"{% endif %}>{% icone "graph-up-arrow" %}<span>Lucro</span></a></li>
         <li><a href="{% url 'relatorios:movimentacoes' %}" {% if request.resolver_match.view_name == 'relatorios:movimentacoes' %}aria-current="page"{% endif %}>{% icone "clock-history" %}<span>Movimentações</span></a></li>
         {% endif %}
       </ul>
+
+      {% if user.is_admin %}
+      <h2 id="grupo-analise">Análise de Dados</h2>
+      <ul aria-labelledby="grupo-analise">
+        <li><a href="{% url 'relatorios:mais_vendidos' %}" {% if request.resolver_match.view_name == 'relatorios:mais_vendidos' %}aria-current="page"{% endif %}>{% icone "trophy-fill" %}<span>Mais vendidos</span></a></li>
+        <li><a href="{% url 'relatorios:lucro' %}" {% if request.resolver_match.view_name == 'relatorios:lucro' %}aria-current="page"{% endif %}>{% icone "graph-up-arrow" %}<span>Lucro</span></a></li>
+      </ul>
+      {% endif %}
 
       {% if user.is_admin %}
       <h2 id="grupo-admin">Administração</h2>
