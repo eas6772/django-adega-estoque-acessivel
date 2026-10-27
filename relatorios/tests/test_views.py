@@ -109,6 +109,26 @@ class RelatoriosViewsTestCase(TestCase):
         entradas = self.client.get(url, {'tipo': 'entrada'})
         self.assertEqual(len(entradas.context['movimentacoes']), 0)
 
+    def test_movimentacoes_pdf_admin(self):
+        self.entrar('admin')
+        resposta = self.client.get(reverse('relatorios:movimentacoes'))
+        self.assertContains(resposta, reverse('relatorios:movimentacoes_pdf'))
+        resposta = self.client.get(reverse('relatorios:movimentacoes_pdf'))
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta['Content-Type'], 'application/pdf')
+        self.assertIn(f'movimentacoes-{timezone.localdate():%Y%m%d}.pdf',
+                      resposta['Content-Disposition'])
+        self.assertTrue(b''.join(resposta.streaming_content).startswith(b'%PDF'))
+
+    def test_movimentacoes_pdf_mantem_filtro_na_pagina(self):
+        self.entrar('admin')
+        resposta = self.client.get(reverse('relatorios:movimentacoes'), {'tipo': 'entrada'})
+        self.assertContains(resposta, f"{reverse('relatorios:movimentacoes_pdf')}?tipo=entrada")
+
+    def test_movimentacoes_pdf_negado_ao_operador(self):
+        self.entrar('operador')
+        self.assertEqual(self.client.get(reverse('relatorios:movimentacoes_pdf')).status_code, 403)
+
     def test_paginas_restritas_negam_operador(self):
         self.entrar('operador')
         for nome in ['mais_vendidos', 'lucro', 'movimentacoes']:

@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.views.generic import ListView
 
-from core.permissoes import AdminRequiredMixin
+from core.permissoes import AdminRequiredMixin, admin_required
 from core.views import SecaoAtivaMixin
 from estoque import views as estoque_views
 
@@ -84,3 +84,15 @@ class MovimentacoesRelView(AdminRequiredMixin, estoque_views.MovimentacaoListVie
     template_name = 'relatorios/movimentacoes.html'
     paginate_by = 30
     secao_ativa = 'relatorios'
+
+
+@admin_required
+def movimentacoes_pdf(request):
+    # Mesma consulta e mesmos filtros da página, mas sem paginação.
+    listagem = MovimentacoesRelView()
+    listagem.request = request
+    nome_arquivo = f'movimentacoes-{timezone.localdate():%Y%m%d}.pdf'
+    return FileResponse(
+        pdf.gerar_pdf_movimentacoes(listagem.get_queryset()),
+        as_attachment=True, filename=nome_arquivo,
+    )
