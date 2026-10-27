@@ -4,7 +4,10 @@
 {% block titulo_pagina %}Movimentações{% endblock %}
 
 {% block content %}
-<h2>Histórico de movimentações</h2>
+<div class="cabecalho-pagina">
+  <h2>Histórico de movimentações</h2>
+  <a href="{% url 'relatorios:movimentacoes_pdf' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="botao-secundario">{% icone "file-earmark-pdf-fill" %} Exportar PDF</a>
+</div>
 
 <form method="get" role="search" aria-label="Filtrar movimentações">
   <fieldset class="filtro-periodo">

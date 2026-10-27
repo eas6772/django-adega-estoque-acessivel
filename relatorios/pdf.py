@@ -6,9 +6,10 @@ import io
 
 from django.utils import timezone
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, landscape
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from xml.sax.saxutils import escape
 
 from core.templatetags.ui import brl
 
@@ -46,6 +47,47 @@ def gerar_pdf_reposicao():
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('FONTSIZE', (0, 0), (-1, -1), 9),
+    ]))
+    elementos.append(tabela)
+
+    documento.build(elementos)
+    buffer.seek(0)
+    return buffer
+
+
+def gerar_pdf_movimentacoes(movimentacoes):
+    """Histórico de movimentações já filtrado pela view (todas as linhas, sem paginar)."""
+    buffer = io.BytesIO()
+    documento = SimpleDocTemplate(buffer, pagesize=landscape(A4))
+    estilos = getSampleStyleSheet()
+    estilo_celula = ParagraphStyle('celula', parent=estilos['Normal'], fontSize=8, leading=10)
+
+    elementos = [
+        Paragraph('Empório BR — Histórico de movimentações', estilos['Title']),
+        Paragraph(f'Gerado em {timezone.localtime():%d/%m/%Y %H:%M}', estilos['Normal']),
+        Spacer(1, 12),
+    ]
+
+    linhas = [['Data', 'Produto', 'Lote', 'Tipo', 'Quantidade', 'Usuário', 'Motivo']]
+    for mov in movimentacoes:
+        linhas.append([
+            f'{timezone.localtime(mov.data):%d/%m/%Y %H:%M}',
+            Paragraph(escape(mov.produto.nome), estilo_celula),
+            (mov.lote.numero_lote if mov.lote else None) or '—',
+            mov.get_tipo_display(),
+            str(mov.quantidade),
+            Paragraph(escape(mov.usuario.nome), estilo_celula),
+            Paragraph(escape(mov.motivo or '—'), estilo_celula),
+        ])
+
+    tabela = Table(linhas, repeatRows=1, colWidths=[85, 140, 60, 70, 60, 90, 230])
+    tabela.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#333333')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('ALIGN', (4, 1), (4, -1), 'RIGHT'),
     ]))
     elementos.append(tabela)
 

@@ -12,4 +12,5 @@ urlpatterns = [
     path('mais-vendidos/', views.MaisVendidosRelView.as_view(), name='mais_vendidos'),
     path('lucro/', views.LucroRelView.as_view(), name='lucro'),
     path('movimentacoes/', views.MovimentacoesRelView.as_view(), name='movimentacoes'),
+    path('movimentacoes/pdf/', views.movimentacoes_pdf, name='movimentacoes_pdf'),
 ]
